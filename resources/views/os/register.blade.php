@@ -53,6 +53,45 @@
 											</div>
 										</div>
 									</div>
+									<div class="row">
+										<div class="form-group validated col-sm-12 col-lg-12">
+											<label class="col-form-label">Equipamento</label>
+											<div class="">
+												<textarea class="form-control" name="equipamento" rows="3">{{{ isset($os->equipamento) ? $os->equipamento : old('equipamento') }}}</textarea>
+												@if($errors->has('equipamento'))
+												<div class="invalid-feedback">
+													{{ $errors->first('equipamento') }}
+												</div>
+												@endif
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="form-group validated col-sm-12 col-lg-12">
+											<label class="col-form-label">Problema</label>
+											<div class="">
+												<textarea class="form-control" name="problema" rows="3">{{{ isset($os->problema) ? $os->problema : old('problema') }}}</textarea>
+												@if($errors->has('problema'))
+												<div class="invalid-feedback">
+													{{ $errors->first('problema') }}
+												</div>
+												@endif
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="form-group validated col-sm-12 col-lg-12">
+											<label class="col-form-label">Laudo Técnico</label>
+											<div class="">
+												<textarea class="form-control" name="laudoTecnico" rows="3">{{{ isset($os->laudoTecnico) ? $os->laudoTecnico : old('laudoTecnico') }}}</textarea>
+												@if($errors->has('laudoTecnico'))
+												<div class="invalid-feedback">
+													{{ $errors->first('laudoTecnico') }}
+												</div>
+												@endif
+											</div>
+										</div>
+									</div>
 								</div>
 							</div>
 						</div>

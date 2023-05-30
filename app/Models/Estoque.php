@@ -16,6 +16,10 @@ class Estoque extends Model
         return $this->belongsTo(Produto::class, 'produto_id');
     }
 
+    /**
+     * Summary of valorCompra
+     * @return string
+     */
     public function valorCompra(){
         return number_format($this->valor_compra/$this->produto->conversao_unitaria, 2);
     }

@@ -56,8 +56,9 @@
 												<td class="datatable-cell"><span class="codigo" style="width: 80px;">
 													{{$e->produto->unidade_venda}}
 												</span></td>
+
 												<td class="datatable-cell"><span class="codigo" style="width: 80px;">
-													{{ number_format($e->produto->valor_compra, 2, ',', '.') }} {{$e->produto->unidade_compra}}
+													{{ number_format(str_replace(",", "", $e->valorCompra()) * $e->quantidade, 2, ',', '.') }}
 												</span></td>
 
 												<td class="datatable-cell"><span class="codigo" style="width: 80px;">
