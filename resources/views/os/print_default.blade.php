@@ -10,31 +10,31 @@
 	<body onload="gerarArquivo()">
 
 		<div class="row" id="pdf">
-			
+			<p class="arc">ARC - Sistema de Gestão ERP - ORDEM DE SERVIÇO #{{$ordem->id}}</p>
 			<div class="row topo">
-				<div class="col s5 logo center-align">
+				<div class="col s5 logo left-align">
 					<img class="logo" src="/imgs/logo.png"> 
-					<p class="">Email: {{getenv("MAIL_USERNAME")}}</p>
 				</div>
 
 				<div class="col s7 center-align">
-					<h5>{{$config->razao_social}}</h5>
+					<h5 class="OS">ORDEM DE SERVIÇO #{{$ordem->id}} </h5>
 					<label>
-						<strong>Relatório de OS {{$ordem->id}}</strong><br>
-						<strong>CNPJ {{$config->cnpj}}</strong>
+						<strong>{{$config->nome_fantasia}} - CNPJ {{$config->cnpj}}</strong>
 					</label><br>
 					<span>{{$config->logradouro}}, {{$config->numero}} - {{$config->bairro}}</span><br>
 					<span>Fone: {{$config->fone}} - CEP {{$config->cep}} - {{$config->municipio}} - {{$config->UF}}</span>
 				</div>
 			</div>
-
+			<div class="col s12 right-align">
+				<span class="responsavel">Técnico Resposável: {{$ordem->usuario->nome}}</span>
+			</div>
 			<div class="row identificacao-paciente">
 				<div class="col s7">
 					<label>Data de criação: <strong id="data-exame">{{\Carbon\Carbon::parse($ordem->created_at)->format('d/m/Y')}}</strong></label><br>
 					<label>Cliente: <strong>{{$ordem->cliente->razao_social}}</strong></label><br>
 					<label>Endreço: <strong>{{$ordem->cliente->rua}}, {{$ordem->cliente->numero}} - {{$ordem->cliente->bairro}}
 					</strong></label><br>
-					<label>Telefone: <strong>{{$ordem->cliente->telefone}}</strong></label><br>
+					<label>Email: <strong>{{$ordem->cliente->email}}</strong></label><br>
 
 
 				</div>
@@ -56,7 +56,7 @@
 					
 					<br>
 					<div class="traco-assinatura"></div>
-					<span class=""><strong>Assinatura responsável</strong></span><br>
+					<span class="responsavel"><strong>Assinatura responsável</strong></span><br>
 
 				</div>
 
@@ -74,7 +74,6 @@
 			<div class="row rodape-info center-align">
 				<div class="col s12">
 					<h6>___________________,____de_______________de________</h6>
-					<h6>Ordem de Serviço <strong>{{$ordem->id}}</strong></h6>
 					<span></span>
 				</div>
 				

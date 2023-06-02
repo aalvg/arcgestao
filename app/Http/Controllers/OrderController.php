@@ -15,6 +15,7 @@ use App\Models\ConfigNota;
 use App\Helpers\StockMove;
 use \Carbon\Carbon;
 
+
 class OrderController extends Controller
 {	
 	public function __construct(){
@@ -70,6 +71,10 @@ class OrderController extends Controller
 
         $result = $order->create([
             'descricao' => $request->input('descricao'),
+            'equipamento' => $request->input('equipamento'),
+            'problema' => $request->input('problema'),
+            'recebimento' => $request->input('recebimento'),
+            'laudo' => $request->input('laudo'),
             'usuario_id' => get_id_user(),
             'cliente_id' => $cliente
         ]);
@@ -263,7 +268,12 @@ class OrderController extends Controller
         $result = $relatorioOs->create([
             'usuario_id' => get_id_user(),
             'ordem_servico_id' => $request->input('ordemId'),
-            'texto' => $request->texto
+            'texto' => $request->texto,
+            'equipamento' => $request->equipamento,
+            'problema' => $request->problema,
+            'recebimento' => $request->recebimento,
+            'laudo' => $request->laudo,
+
         ]);
 
         if($result){
@@ -284,6 +294,10 @@ class OrderController extends Controller
         ->first(); 
 
         $resp->texto = $request->input('texto');
+        $resp->equipamento = $request->input('equipamento');
+        $resp->problema = $request->input('problema');
+        $resp->recebimento = $request->input('recebimento');
+        $resp->laudo = $request->input('laudo');
         $result = $resp->save();
         if($result){
             session()->flash("mensagem_sucesso", "Relatorio editado!");
@@ -318,7 +332,7 @@ class OrderController extends Controller
 
         $messages = [
             'cliente.required' => 'O campo cliente é obrigatório.',
-            'descricao.required' => 'O campo descrição é obrigatório.'
+            'descricao.required' => 'O campo descrição é obrigatório.',
         ];
 
         $this->validate($request, $rules, $messages);
@@ -354,12 +368,18 @@ class OrderController extends Controller
 
     private function _validateRelatorio(Request $request){
         $rules = [
-            'texto' => 'required|min:15',
+            'equipamento' => 'required|min:15',
+            'problema' => 'required|min:15',
+            'recebimento' => 'required|min:15',
         ];
 
         $messages = [
-            'texto.required' => 'O campo texto é obrigatório.',
-            'texto.min' => 'Minimo de 15 caracteres.',
+            'equipamento.required' => 'O campo equipamento é obrigatório.',
+            'equipamento.min' => 'Minimo de 15 caracteres.',
+            'problema.required' => 'O campo problema é obrigatório.',
+            'problema.min' => 'Minimo de 15 caracteres.',
+            'recebimento.required' => 'O campo recebimento é obrigatório.',
+            'recebimento.min' => 'Minimo de 15 caracteres.',
         ];
 
         $this->validate($request, $rules, $messages);

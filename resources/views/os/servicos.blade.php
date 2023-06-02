@@ -311,27 +311,99 @@
 	<div class="row" id="content" style="display: block">
 		<div class="content d-flex flex-column flex-column-fluid" id="kt_content">
 
+
+
+
+
+
+
+
+
+
+
 			<div class="container">
 				<div class="card card-custom gutter-b example example-compact">
 					<div class="col-lg-12">
-
 						<div class="row">
-
-							<div class="col-xl-12">
-
+							@foreach($ordem->relatorios as $r)
+								@endforeach
+							<div class="col-xl-12 p-4">
 								<div class="form-group validated col-sm-12 col-lg-12">
 									<h4>Relatórios da OS</h4>
-
 								</div>
-
 								<div class="col-sm-12 col-lg-12 col-md-12 col-xl-12">
 									<a href="/ordemServico/addRelatorio/{{$ordem->id}}" class="btn btn-success">
 										<i class="la la-plus"></i>
 										Adicionar Relatório
 									</a>
+									<td class="datatable-cell"><span class="codigo" style="width: 150px;">
+										<a onclick='swal("Atenção!", "Deseja remover este registro?", "warning").then((sim) => {if(sim){ location.href="/ordemServico/deleteRelatorio/{{ $r->id }}" }else{return false} })' href="#!" class="btn btn-danger">
+											<span class="la la-trash"></span>
+										</a>
+										<a class="btn btn-primary" href="/ordemServico/editRelatorio/{{ $r->id }}">
+											<span class="la la-edit"></span>					
+										</a>
+									</span></td>
 								</div>
 							</div>
+							<!-- 1 - FORMULARIOS COM DADOS DOS EQUIPAMENTOS -->
+							<div class="row" style="width: 100%;">
+								@foreach($ordem->relatorios as $r)
+								@endforeach
+								<div class="col-md-6" >
+									<label for="text1">Observações:</label>
+									<span type="text" style="height: 200px" name="text2" id="text2" class="form-control form-control-lg">{{$r->texto}}</span>
+								</div>
+								<div class="col-md-6">
+									<label for="text2">Equipamento:</label>
+									<span type="text" style="height: 200px" name="text2" id="text2" class="form-control form-control-lg">{{$r->equipamento}}</span>
+								</div>
+							</div>
+							<!-- 1 - FIM DOS FORMULARIOS COM DADOS DOS EQUIPAMENTOS -->
+							<!-- 2 - FORMULARIOS COM DADOS DOS EQUIPAMENTOS -->
+							<div class="row" style="width: 100%;">
+								@foreach($ordem->relatorios as $r)
+								@endforeach
+								<div class="col-md-6" >
+									<label for="text1">Problema:</label>
+									<span type="text" style="height: 200px" name="text2" id="text2" class="form-control form-control-lg">{{$r->problema}}</span>
+								</div>
+								<div class="col-md-6">
+									<label for="text2">Observações de recebimento:</label>
+									<span type="text" style="height: 200px" name="text2" id="text2" class="form-control form-control-lg">{{$r->recebimento}}</span>
+								</div>
+							</div>
+							<!-- 2 - FIM DOS FORMULARIOS COM DADOS DOS EQUIPAMENTOS -->
+							<!-- 3 - FORMULARIOS COM DADOS DOS EQUIPAMENTOS -->
+							<div class="row" style="width: 100%;">
+								@foreach($ordem->relatorios as $r)
+								@endforeach
+								<div class="col-md-6" >
+									<label for="text1">Laudo Técnico:</label>
+									<span type="text" style="height: 200px" name="text2" id="text2" class="form-control form-control-lg">{{$r->laudo}}</span>
+								</div>
+							</div>
+							<!-- 3 - FIM DOS FORMULARIOS COM DADOS DOS EQUIPAMENTOS -->
+							<div class="row p-10">
+								<div class="col">
+									<label for="text1">Observações Gerais:</label>
+									<span><p>Problemas como uso inadequado, danos físicos ao pertence, 
+										falta da nota de compra no momento da troca não serão cobertos pela garantia.<br></p> 
+									
+										<p>90 dias de garantia do serviço, onde será avaliado o que foi feito e o dano aparente no dia de retorno.
+									Pertence que não foi ligado na pré-avaliação com a atendente, serão devidamente avaliados registrados e passados qualquer dano 
+									não aparente para o cliente em questão.<br> </p>
 
+									<p>Avalie preções e descrição de serviço antes de autoriza-lo.<br> </p>
+
+									<p>Informações sobre prazo de retirada de mercadorias:<br> </p>
+
+									<p>* Apos o proprietário ser comunicado pelo estabelecimento sobre o conserto ou a impossibilidade deste, poderá retirar sua mercadoria
+									em até 30 dias sem custos adicionais;<br> 
+									Depois dos 30 dias será cobrada uma taxa de R$5,00 (cinco reais) diária para o armazenamento do equipamento;<br> </p>
+									</span>
+								</div>
+							</div>
 							<div class="col-xl-12">
 								<div class="row">
 									<div class="col-xl-12">
@@ -340,82 +412,21 @@
 											<div id="kt_datatable" class="datatable datatable-bordered datatable-head-custom datatable-default datatable-primary datatable-loaded">
 
 												<table class="datatable-table" style="max-width: 100%; overflow: scroll">
-													<thead class="datatable-head">
-														<tr class="datatable-row" style="left: 0px;">
-															<th data-field="OrderID" class="datatable-cell datatable-cell-sort"><span style="width: 80px;">#</span></th>
-															<th data-field="OrderID" class="datatable-cell datatable-cell-sort"><span style="width: 200px;">Data</span></th>
-															<th data-field="Country" class="datatable-cell datatable-cell-sort"><span style="width: 200px;">Usuário</span></th>
-															<th data-field="CompanyName" class="datatable-cell datatable-cell-sort"><span style="width: 150px;">Ações</span></th>
-														</tr>
-													</thead>
-
-													<tbody class="datatable-body">
-
-														@foreach($ordem->relatorios as $r)
-														<tr class="datatable-row" style="left: 0px;">
-
-															<td class="datatable-cell"><span class="codigo" style="width: 80px;">{{$r->id}}</span></td>
-															<td class="datatable-cell"><span class="codigo" style="width: 200px;">{{ \Carbon\Carbon::parse($r->data_registro)->format('d/m/Y H:i:s')}}</span></td>
 
 
-															<td class="datatable-cell"><span class="codigo" style="width: 200px;">{{$r->usuario->nome}}</span></td>
-
-															<td class="datatable-cell"><span class="codigo" style="width: 150px;">
-																<a onclick='swal("Atenção!", "Deseja remover este registro?", "warning").then((sim) => {if(sim){ location.href="/ordemServico/deleteRelatorio/{{ $r->id }}" }else{return false} })' href="#!" class="btn btn-danger">
-																	<span class="la la-trash"></span>
-																</a>
-
-																<a class="btn btn-primary" href="/ordemServico/editRelatorio/{{ $r->id }}">
-																	<span class="la la-edit"></span>					
-																</a>
-
-																<a class="btn btn-info" href="#!" onclick="modal('{{ \Carbon\Carbon::parse($r->data_registro)->format('d/m/Y H:i:s')}}', '{{$r->texto}}')">
-																	<span class="la la-sticky-note"></span>					
-																</a>
-
-															</span></td>
-
-														</tr>
-														@endforeach
-
-													</tbody>
 												</table>
 											</div>
 										</div>
-
 									</div>
 								</div>
 							</div>
-
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-
 	</div>
 </div>
-
-<div class="modal fade" id="modal1" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdrop" aria-hidden="true">
-	<div class="modal-dialog modal-lg" role="document">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title" id="data"></h5>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-					x
-				</button>
-			</div>
-			<div class="modal-body">
-				<p id="texto"></p>
-
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-light-danger font-weight-bold" data-dismiss="modal">Fechar</button>
-			</div>
-		</div>
-	</div>
-</div>
-
 <div class="modal fade" id="modal-desconto" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdrop" aria-hidden="true">
 	<div class="modal-dialog modal-sm" role="document">
 		<div class="modal-content">

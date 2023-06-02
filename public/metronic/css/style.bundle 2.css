@@ -46158,6 +46158,7 @@ code {
     display: block; }
     .datatable.datatable-default.datatable-loaded > .datatable-table {
       display: block; }
+      
       .datatable.datatable-default.datatable-loaded > .datatable-table > .datatable-head,
       .datatable.datatable-default.datatable-loaded > .datatable-table > .datatable-body,
       .datatable.datatable-default.datatable-loaded > .datatable-table > .datatable-foot {

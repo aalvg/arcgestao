@@ -1,74 +1,74 @@
 #pdf{
-	border: 2px solid green;
-	border-radius: 15px;
-	margin-top: 10px;
-	margin-bottom: 10px;
+
+
+	margin-top: 5px;
+	margin-bottom: 5px;
 }
 
 h5{
-	color: green;
+	color: black;
 	font-size: 20px;
 }
 p{
-	color: green;
+	color: black;
 }
 
 .logo img{
-	width: 90%;
-	height: 88px;
+	max-width: 150px; 
+	max-height: 100px
 }
 
 .logo p{
-	color: green;
+	color: black;
 	font-size: 11px;
 }
 
 .topo h5{
 
-	color: green;
+	color: black;
 	font-size: 16px;
 }
 
 .topo label{
-	color: green;
+	color: black;
 	font-size: 11px;
 }
 
 .topo span{
-	color: green;
+	color: black;
 	font-size: 10px;
 }
 
 .topo{
 	line-height: 15px;
-	border-bottom: 1px solid green;
+	border-bottom: 1px solid black;
 }
 
 .tipo-exame{
-	border-bottom: 1px solid green;
+	border-bottom: 1px solid black;
 }
 
 .tipo-exame h5{
-	color: green;
+	color: black;
 }
 
 .identificacao-paciente{
 	line-height: 15px;
-	border-bottom: 1px solid green;
+	border-bottom: 1px solid black;
 }
 
 .identificacao-paciente label{
-	color: green;
+	color: black;
 	font-size: 12px;
 }
 
 .rodape{
-	border-bottom: 1px solid green;
+	padding-top: 10px;
 	line-height: 15px;
 }
 
 .rodape span{
-	color: green;
+	color: black;
 	font-size: 12px;
 }
 
@@ -77,44 +77,47 @@ p{
 }
 
 .rodape-info h6{
-	color: green;
+	color: black;
 }
 
 .rodape-info span{
 	font-size: 12.2px;
-	color: green;
+	color: black;
 }
 
 .corpo-exame{
-	border-bottom: 1px solid green;
-	line-height: 15px;
+	line-height: 1px;
 }
 
 .corpo-exame span{
-	color: green;
+	color: black;
 	font-size: 11px;
 }
 
 .corpo-exame h6{
-	color: green;
+	color: black;
+	font-weight: bold;
+	padding-bottom: 2px;
+
 }
 
 .corpo-exame label{
-	color: green;
-	font-size: 14px;
+	color: black;
+	font-size: 11px;
 }
 
 .observacao{
-	border-bottom: 1px solid green;
+	border-bottom: 1px solid black;
 }
 
 .observacao h6{
-	color: green;
+	font-weight: bold;
+	color: black;
 	text-decoration: underline;
 }
 
 .observacao span{
-	color: green;
+	color: black;
 	font-size: 10px;
 }
 
@@ -126,9 +129,48 @@ p{
 .traco-assinatura{
 	width: 50%;
 	height: 1px;
-	background-color: green;
+	background-color: black;
 	margin-top: -15px;
 	margin-left: 25%;
+}
+/* lab é o css do titulo */
+.lab{ 
+	width: 100%;
+	font-size: 11px;
+	margin-left: auto;
+	font-weight: bold;
+	text-transform: uppercase;
+
+}
+/* linha embaixo do conteudo */
+.col-md-6{
+	border-bottom: 1px solid black;
+	line-height: 15px;
+	padding-bottom: 10px;
+}
+/* referente ao texto descritivo */
+.form-control.form-control-lg{
+	font-size: 11px;
+}
+.arc{
+	text-align: center;
+	padding-top: 2px;
+	font-size: 10px;
+	text-transform: uppercase;
+	font-weight: bold;
+}
+
+.OS{
+	font-weight: bold;
+}
+
+.identificacao-paciente{
+	padding-bottom: 10px;
+}
+
+.responsavel{
+	font-size: 10px;
+	font-weight: bold;
 }
 
 

@@ -40,12 +40,64 @@
 									</div>
 									<div class="row">
 										<div class="form-group validated col-sm-12 col-lg-12">
-											<label class="col-form-label">Descrição</label>
+											<label class="col-form-label">Observações</label>
 											<div class="">
 												<textarea class="form-control" name="texto" rows="3">{{{ isset($relatorio) ? $relatorio->texto : old('texto') }}}</textarea>
 												@if($errors->has('texto'))
 												<div class="invalid-feedback">
 													{{ $errors->first('texto') }}
+												</div>
+												@endif
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="form-group validated col-sm-12 col-lg-12">
+											<label class="col-form-label">Equipamento</label>
+											<div class="">
+												<textarea class="form-control" name="equipamento" rows="3">{{{ isset($relatorio) ? $relatorio->equipamento : old('equipamentotxt') }}}</textarea>
+												@if($errors->has('equipamento'))
+												<div class="invalid-feedback">
+													{{ $errors->first('equipamento') }}
+												</div>
+												@endif
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="form-group validated col-sm-12 col-lg-12">
+											<label class="col-form-label">Problema</label>
+											<div class="">
+												<textarea class="form-control" name="problema" rows="3">{{{ isset($relatorio) ? $relatorio->problema : old('problema') }}}</textarea>
+												@if($errors->has('problema'))
+												<div class="invalid-feedback">
+													{{ $errors->first('problema') }}
+												</div>
+												@endif
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="form-group validated col-sm-12 col-lg-12">
+											<label class="col-form-label">Observações de recebimento</label>
+											<div class="">
+												<textarea class="form-control" name="recebimento" rows="1">{{{ isset($relatorio) ? $relatorio->recebimento : old('recebimento') }}}</textarea>
+												@if($errors->has('recebimento'))
+												<div class="invalid-feedback">
+													{{ $errors->first('recebimento') }}
+												</div>
+												@endif
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="form-group validated col-sm-12 col-lg-12">
+											<label class="col-form-label">Laudo Técnico</label>
+											<div class="">
+												<textarea class="form-control" name="laudo" rows="3">{{{ isset($relatorio) ? $relatorio->laudo : old('laudo') }}}</textarea>
+												@if($errors->has('laudo'))
+												<div class="invalid-feedback">
+													{{ $errors->first('laudo') }}
 												</div>
 												@endif
 											</div>
