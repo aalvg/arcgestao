@@ -310,17 +310,6 @@
 	<hr>
 	<div class="row" id="content" style="display: block">
 		<div class="content d-flex flex-column flex-column-fluid" id="kt_content">
-
-
-
-
-
-
-
-
-
-
-
 			<div class="container">
 				<div class="card card-custom gutter-b example example-compact">
 					<div class="col-lg-12">
@@ -381,6 +370,10 @@
 								<div class="col-md-6" >
 									<label for="text1">Laudo Técnico:</label>
 									<span type="text" style="height: 200px" name="text2" id="text2" class="form-control form-control-lg">{{$r->laudo}}</span>
+								</div>
+								<div class="col-md-6" >
+									<label for="text1">RMA:</label>
+									<span type="text" style="height: 200px" name="text2" id="text2" class="form-control form-control-lg">{{$r->rma}}</span>
 								</div>
 							</div>
 							<!-- 3 - FIM DOS FORMULARIOS COM DADOS DOS EQUIPAMENTOS -->

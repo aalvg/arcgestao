@@ -15,7 +15,8 @@ class RelatorioOs extends Model
            'equipamento',
             'problema',
             'recebimento',
-            'laudo'
+            'laudo',
+            'rma'
 
     ];
 

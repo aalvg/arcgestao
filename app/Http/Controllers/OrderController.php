@@ -75,6 +75,7 @@ class OrderController extends Controller
             'problema' => $request->input('problema'),
             'recebimento' => $request->input('recebimento'),
             'laudo' => $request->input('laudo'),
+            'rma' => $request->input('rma'),
             'usuario_id' => get_id_user(),
             'cliente_id' => $cliente
         ]);
@@ -273,6 +274,7 @@ class OrderController extends Controller
             'problema' => $request->problema,
             'recebimento' => $request->recebimento,
             'laudo' => $request->laudo,
+            'rma' => $request->rma,
 
         ]);
 
@@ -298,6 +300,7 @@ class OrderController extends Controller
         $resp->problema = $request->input('problema');
         $resp->recebimento = $request->input('recebimento');
         $resp->laudo = $request->input('laudo');
+        $resp->rma = $request->input('rma');
         $result = $resp->save();
         if($result){
             session()->flash("mensagem_sucesso", "Relatorio editado!");

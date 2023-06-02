@@ -65,6 +65,10 @@
 									<p><label class="lab" for="text3">Laudo Técnico:</label></p>
 									<span type="text" name="text3" id="text2" class="form-control form-control-lg">{{$r->laudo}}</span>
 								</div>
+								<div class="col-md-6" >
+									<p><label class="lab" for="text3">RMA:</label></p>
+									<span type="text" name="text3" id="text2" class="form-control form-control-lg">{{$r->rma}}</span>
+								</div>
 							</div>
 							<!-- 1 - FIM DOS FORMULARIOS COM DADOS DOS EQUIPAMENTOS -->
 	</div>
