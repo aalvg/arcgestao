@@ -20,7 +20,7 @@ use NFePHP\DA\NFe\Danfe;
 use Mail;
 use App\Helpers\StockMove;
 
-class OrcamentoController extends Controller
+class VendaOSController extends Controller
 {
 
 	public function __construct(){
@@ -31,7 +31,7 @@ class OrcamentoController extends Controller
 			}
 			return $next($request);
 		});
-	} 
+	}
 
 	public function index(){
 		$orcamentos = Orcamento::
@@ -41,7 +41,7 @@ class OrcamentoController extends Controller
 		$menos30 = $this->menos30Dias();
 		$date = date('d/m/Y');
 		
-		return view("orcamentos/list")
+		return view("os/list_orcamento")
 		->with('orcamentos', $orcamentos)
 		->with('orcamentoJs', true)
 		->with('links', true)
@@ -188,7 +188,7 @@ class OrcamentoController extends Controller
 		
 		$diasParaVencimento = $distancia/86400;
 
-		return view("orcamentos/detalhe")
+		return view("os/orcamento_detalhe")
 		->with('orcamento', $orcamento)
 		->with('naturezas', $naturezas)
 		->with('produtos', $produtos)
@@ -632,7 +632,7 @@ class OrcamentoController extends Controller
 		$menos30 = $this->menos30Dias();
 		$date = date('d/m/Y');
 
-		return view("orcamentos/list")
+		return view("os/list_orcamento")
 		->with('orcamentos', $orcamentos)
 		->with('orcamentoJs', true)
 		->with('dataInicial', $dataInicial)

@@ -1,6 +1,10 @@
 @extends('default.layout')
 @section('content')
 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
 <div class="card card-custom gutter-b">
 
 	<div class="card-body">
@@ -28,6 +32,28 @@
 			<a target="_blank" href="/ordemServico/imprimir/{{$ordem->id}}" class="btn btn-info">
 				<i class="la la-print"></i> Imprimir
 			</a>
+
+			<a type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">
+
+				Adicionar Produtos
+<!-- Modal -->
+				<div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+					<div class="modal-dialog modal-lg">
+	 					 <div class="modal-content">
+							<div class="modal-header">
+							  <h5 class="modal-title" id="exampleModalLabel">Adicionar Produtos a OS</h5>
+							  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+							</div>
+							<div class="modal-body">
+		  						<iframe src="/ordemServico/detalhar/{{$ordem->id}}" frameborder="0" style="width: 100%; height: 500px;"></iframe>
+							</div>
+	 					 </div>
+					</div>
+ 				 </div>
+			</a>
+
+			  
+			  
 		</div>
 
 		<div class="col-sm-12 col-lg-12 col-md-12 col-xl-12">
@@ -39,7 +65,7 @@
 				<strong> -- </strong>
 				@endif
 			</h5>
-			<h5>Total <strong class="text-success">R$ {{number_format($ordem->valor, 2, ',', '.')}}</strong></h5>
+			<h5>Total <strong class="text-success">R$ {{number_format($ordem->valor_venda, 2, ',', '.')}}</strong></h5>
 
 
 			<h5>Desconto: R$ <strong class="text-danger">{{number_format($ordem->desconto, 2, ',', '.')}}</strong>
@@ -377,26 +403,7 @@
 								</div>
 							</div>
 							<!-- 3 - FIM DOS FORMULARIOS COM DADOS DOS EQUIPAMENTOS -->
-							<div class="row p-10">
-								<div class="col">
-									<label for="text1">Observações Gerais:</label>
-									<span><p>Problemas como uso inadequado, danos físicos ao pertence, 
-										falta da nota de compra no momento da troca não serão cobertos pela garantia.<br></p> 
-									
-										<p>90 dias de garantia do serviço, onde será avaliado o que foi feito e o dano aparente no dia de retorno.
-									Pertence que não foi ligado na pré-avaliação com a atendente, serão devidamente avaliados registrados e passados qualquer dano 
-									não aparente para o cliente em questão.<br> </p>
 
-									<p>Avalie preções e descrição de serviço antes de autoriza-lo.<br> </p>
-
-									<p>Informações sobre prazo de retirada de mercadorias:<br> </p>
-
-									<p>* Apos o proprietário ser comunicado pelo estabelecimento sobre o conserto ou a impossibilidade deste, poderá retirar sua mercadoria
-									em até 30 dias sem custos adicionais;<br> 
-									Depois dos 30 dias será cobrada uma taxa de R$5,00 (cinco reais) diária para o armazenamento do equipamento;<br> </p>
-									</span>
-								</div>
-							</div>
 							<div class="col-xl-12">
 								<div class="row">
 									<div class="col-xl-12">
@@ -448,5 +455,114 @@
 		</div>
 	</div>
 </div>
+
+
+
+
+
+
+
+
+
+
+<form method="POST" action="{{ route('addItem') }}">
+	@csrf
+    <!-- Campos do formulário -->
+
+    <select id="produto" name="produto_id" onchange="atualizarValorVenda()">
+        @foreach ($produtos as $produto)
+            <option value="{{ $produto->id }}" data-valor-venda="{{ $produto->valor_venda }}" data-quantidade="{{ $produto->quantidade }}">{{ $produto->nome }}</option>
+        @endforeach
+    </select>
+
+    <input type="text" name="valor_venda" id="valor-venda" readonly>
+
+    <input type="text" name="quantidade" id="quantidade" readonly>
+	<select id="produto" name="produto_id">
+        <!-- Opções do produto -->
+    </select>
+    <input type="number" name="quantidade" placeholder="Quantidade">
+
+
+	<table id="tabela-produtos">
+        <thead>
+            <tr>
+                <th>Produto</th>
+				<th>Valor</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Aqui serão adicionadas as linhas da tabela dinamicamente -->
+        </tbody>
+    </table>
+
+    <!-- Outros campos do formulário -->
+
+    <button type="button" onclick="adicionarProduto()">Adicionar Produto</button>
+	<button type="submit">Salvar</button>
+</form>
+
+<script>
+    function atualizarValorVenda() {
+        var select = document.querySelector('select[name="produto_id"]');
+        var valorVendaInput = document.querySelector('#valor-venda');
+        var quantidadeInput = document.querySelector('#quantidade');
+        var valorVenda = select.options[select.selectedIndex].getAttribute('data-valor-venda');
+        var quantidade = select.options[select.selectedIndex].getAttribute('data-quantidade');
+        valorVendaInput.value = valorVenda;
+        quantidadeInput.value = quantidade;
+    }
+
+
+	function adicionarProduto() {
+        var produtoSelect = document.getElementById('produto');
+        var produtoId = produtoSelect.value;
+        var produtoNome = produtoSelect.options[produtoSelect.selectedIndex].text;
+		var produtoValor = produtoSelect.options[produtoSelect.selectedIndex].getAttribute('data-valor-venda');
+
+        if (produtoId !== '') {
+            var tabelaProdutos = document.getElementById('tabela-produtos');
+            var tbody = tabelaProdutos.getElementsByTagName('tbody')[0];
+
+            var row = document.createElement('tr');
+
+            var colProduto = document.createElement('td');
+            colProduto.textContent = produtoNome;
+            row.appendChild(colProduto);
+
+			var colValor = document.createElement('td');
+            colValor.textContent = produtoValor;
+            row.appendChild(colValor);
+
+            var colAcoes = document.createElement('td');
+            colAcoes.innerHTML = '<button type="button" onclick="removerProduto(this)">Remover</button>';
+            row.appendChild(colAcoes);
+
+            tbody.appendChild(row);
+
+            // Limpa a seleção do campo de seleção
+            produtoSelect.value = '';
+        }
+    }
+
+    function removerProduto(button) {
+        var row = button.parentNode.parentNode;
+        row.parentNode.removeChild(row);
+    }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @endsection

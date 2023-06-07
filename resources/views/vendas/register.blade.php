@@ -205,7 +205,7 @@
 											<!--begin: Wizard Step 1-->
 											<div class="pb-5" data-wizard-type="step-content">
 
-												<!-- Inicio da tabela -->
+												<!-- Inicio da tabela --> 
 
 												<div class="col-sm-12 col-lg-12 col-md-12 col-xl-12">
 													<div class="row">
@@ -218,6 +218,8 @@
 																		@foreach($produtos as $p)
 																		<option value="{{$p->id}}">{{$p->id}} - {{$p->nome}}</option>
 																		@endforeach
+								
+								
 																	</select>
 																</div>
 

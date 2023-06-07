@@ -139,6 +139,7 @@ return array(
     'App\\Http\\Controllers\\VeiculoController' => $baseDir . '/app/Http/Controllers/VeiculoController.php',
     'App\\Http\\Controllers\\VendaCaixaController' => $baseDir . '/app/Http/Controllers/VendaCaixaController.php',
     'App\\Http\\Controllers\\VendaController' => $baseDir . '/app/Http/Controllers/VendaController.php',
+    'App\\Http\\Controllers\\VendaOSController' => $baseDir . '/app/Http/Controllers/VendaOSController.php',
     'App\\Http\\Kernel' => $baseDir . '/app/Http/Kernel.php',
     'App\\Http\\Middleware\\Access' => $baseDir . '/app/Http/Middleware/Access.php',
     'App\\Http\\Middleware\\AtendimentoAtivo' => $baseDir . '/app/Http/Middleware/AtendimentoAtivo.php',

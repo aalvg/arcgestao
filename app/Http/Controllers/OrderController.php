@@ -12,6 +12,9 @@ use App\Models\RelatorioOs;
 use App\Models\Servico;
 use App\Models\Cliente;
 use App\Models\ConfigNota;
+use App\Models\Produto;
+use App\Models\ProdutoOS;
+
 use App\Helpers\StockMove;
 use \Carbon\Carbon;
 
@@ -62,7 +65,7 @@ class OrderController extends Controller
     public function save(Request $request){
         $this->_validate($request);
 
-        $order = new OrdemServico();
+        $order = new OrdemServico;
         $request->merge([ 'valor' =>str_replace(",", ".", $request->input('valor'))]);
 
         $cliente = $request->input('cliente');
@@ -77,7 +80,8 @@ class OrderController extends Controller
             'laudo' => $request->input('laudo'),
             'rma' => $request->input('rma'),
             'usuario_id' => get_id_user(),
-            'cliente_id' => $cliente
+            'cliente_id' => $cliente,
+            
         ]);
 
 
@@ -90,6 +94,25 @@ class OrderController extends Controller
         return redirect("/ordemServico/servicosordem/$result->id");
     }
 
+    public function addItem(Request $request)
+    {
+        $produto = Produto::where('nome', $request->input('nome_produto'))->first();
+
+        if (!$produto) {
+            // Tratar a situação em que o produto não é encontrado
+            // Por exemplo, redirecionar de volta com uma mensagem de erro
+            return redirect()->back()->with('error', 'Produto não encontrado.');
+        }
+    
+        $order = new ProdutoOS();
+        $order->produto_id = $produto->id;
+        $order->quantidade = $request->input('quantidade');
+    
+        $order->save();
+
+        return redirect("/ordemServico/servicosordem/$request->ordem_servico_id");
+    }
+
     public function servicosordem($ordemId){
         $ordem = OrdemServico::
         where('id', $ordemId)
@@ -97,11 +120,14 @@ class OrderController extends Controller
 
         $servicos = Servico::all();
         $funcionarios = Funcionario::all();
-
+        $produtos = Produto::all();
         $temServicos = count(Servico::all()) > 0;
         $temFuncionarios = count(Funcionario::all()) > 0;
+
+
          // echo json_encode($ordem->servicos);
         return view('os/servicos')
+        ->with('produtos', $produtos)
         ->with('ordem', $ordem)
         ->with('relatorioJs', true)
         ->with('funcionario', true)

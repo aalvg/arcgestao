@@ -861,6 +861,7 @@ class ComposerStaticInitde9994963ae9f1234e9e4cd3f6f35a0c
         'App\\Http\\Controllers\\VeiculoController' => __DIR__ . '/../..' . '/app/Http/Controllers/VeiculoController.php',
         'App\\Http\\Controllers\\VendaCaixaController' => __DIR__ . '/../..' . '/app/Http/Controllers/VendaCaixaController.php',
         'App\\Http\\Controllers\\VendaController' => __DIR__ . '/../..' . '/app/Http/Controllers/VendaController.php',
+        'App\\Http\\Controllers\\VendaOSController' => __DIR__ . '/../..' . '/app/Http/Controllers/VendaOSController.php',
         'App\\Http\\Kernel' => __DIR__ . '/../..' . '/app/Http/Kernel.php',
         'App\\Http\\Middleware\\Access' => __DIR__ . '/../..' . '/app/Http/Middleware/Access.php',
         'App\\Http\\Middleware\\AtendimentoAtivo' => __DIR__ . '/../..' . '/app/Http/Middleware/AtendimentoAtivo.php',

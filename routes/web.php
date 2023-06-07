@@ -752,6 +752,7 @@ Route::middleware(['validaAcesso'])->group(function () {
 
 	Route::group(['prefix' => 'ordemServico'],function(){
 		Route::get('/', 'OrderController@index');
+		Route::post('/addItem', 'OrderController@addItem')->name('addItem');
 		Route::get('/new', 'OrderController@new');
 		Route::get('/servicosordem/{id}', 'OrderController@servicosordem');
 		Route::get('/deleteServico/{id}', 'OrderController@deleteServico');
@@ -779,6 +780,12 @@ Route::middleware(['validaAcesso'])->group(function () {
 		Route::get('/imprimir/{id}', 'OrderController@imprimir');
 
 		Route::post('/setaDesconto', 'OrderController@setaDesconto');
+/* TESTANDO ROTAS DE VENDAS EM ORDEM DE SERVIÇO*/
+
+
+
+
+
 	});
 
 	Route::group(['prefix' => 'semRegistro'],function(){
