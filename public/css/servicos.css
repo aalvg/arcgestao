@@ -1,0 +1,28 @@
+.formulario{
+    font-size: 13px;
+    padding: 15px;
+    font-family: Poppins, Helvetica, "sans-serif";
+}
+
+.box-menores{
+    width:60px;
+    margin: 0;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+  }
+.h4-produtos{
+    font-size: 1.5rem;
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    line-height: 1.2;
+    color: var(--bs-heading-color);
+    padding-right: 30px;
+    padding-left: 30px;
+}
+
+.li-produtos{
+    font-size: 1rem;
+
+}

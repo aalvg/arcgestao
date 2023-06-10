@@ -175,23 +175,28 @@ class OrderController extends Controller
     
     public function selectProduct(Request $request)
     {
-    $produtoId = $request->produto_id;
-
-    // Obtenha o produto selecionado pelo ID
-    $produto = Produto::find($produtoId);
-
-    // Verifique se o produto existe
-    if (!$produto) {
-        return redirect()->back()->with('error', 'Produto não encontrado.');
-    }
-
-    // Adicione o produto selecionado à lista de produtos selecionados na sessão
-    $selectedProductIds = session('selected_products', []);
-    $selectedProductIds[] = $request->produto_id;
-    session(['selected_products' => $selectedProductIds]);
+        $produtoId = $request->produto_id;
     
-    return redirect()->back()->with('success', 'Produto selecionado com sucesso!');
-}
+        // Obtenha o produto selecionado pelo ID
+        $produto = Produto::find($produtoId);
+    
+        // Verifique se o produto existe
+        if (!$produto) {
+            return redirect()->back()->with('error', 'Produto não encontrado.');
+        }
+    
+        // Verifique se o estoque do produto é maior que zero
+        if ($produto->estoque->quantidade <= 0) {
+            return redirect()->back()->with('error', 'Produto sem estoque disponível.');
+        }
+    
+        // Adicione o produto selecionado à lista de produtos selecionados na sessão
+        $selectedProductIds = session('selected_products', []);
+        $selectedProductIds[] = $request->produto_id;
+        session(['selected_products' => $selectedProductIds]);
+        
+        return redirect()->back()->with('success', 'Produto selecionado com sucesso!');
+    }
 
 public function saveProducts(Request $request)
 {

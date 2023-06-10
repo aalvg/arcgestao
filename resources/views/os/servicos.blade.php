@@ -2,6 +2,8 @@
 @section('content')
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="{{ asset('css/servicos.css') }}">
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 
@@ -341,7 +343,7 @@
 					<div class="col-lg-12">
 						<div class="row">
 							@foreach($ordem->relatorios as $r)
-								@endforeach
+								
 							<div class="col-xl-12 p-4">
 								<div class="form-group validated col-sm-12 col-lg-12">
 									<h4>Relatórios da OS</h4>
@@ -358,6 +360,7 @@
 										<a class="btn btn-primary" href="/ordemServico/editRelatorio/{{ $r->id }}">
 											<span class="la la-edit"></span>					
 										</a>
+										@endforeach
 									</span></td>
 								</div>
 							</div>
@@ -460,20 +463,34 @@
 
 
 
+
+
+
+
+
+
+
 <!-- Lista de produtos -->
-<form action="{{ route('select.product') }}" method="POST">
+<form class="formulario" action="{{ route('select.product') }}" method="POST">
     @csrf
-    <select name="produto_id" onchange="updateValue(this)">
+    <select class="select2-selection__rendered" name="produto_id" role="textbox" aria-readonly="true" onchange="updateValue(this)">
         @foreach ($produtos as $produto)
-            <option value="{{ $produto->id }}" data-valor="{{ $produto->valor_venda }}">{{ $produto->nome }}</option>
+            <option value="{{ $produto->id }}" data-valor="{{ $produto->valor_venda }}" data-estoque="{{ $produto->estoque->quantidade }}">{{ $produto->nome }}</option>
         @endforeach
     </select>
     <label for="quantidade">Quantidade:</label>
-    <input type="text" id="quantidade" name="quantidade" value="1">
+    <input class="box-menores" type="text" id="quantidade" name="quantidade" value="1">
     <label for="valor">Valor:</label>
-    <input type="text" id="valor" name="valor" value="{{ $produtos->first()->valor_venda }}" readonly>
-    <button type="submit">Adicionar</button>
+    <input class="box-menores" type="text" id="valor" name="valor" value="{{ $produtos->first()->valor_venda }}" readonly>
+    <label for="estoque">Estoque:</label>
+    <input class="box-menores" type="text" id="estoque" name="estoque" value="{{ $produtos->first()->estoque->quantidade }}" readonly>
+   	<button class="btn btn-success" type="submit">Adicionar</button>
+
 </form>
+
+
+
+
 
 <!-- Seção para exibir os produtos selecionados -->
 @if(session('selected_products') && is_array(session('selected_products')))
@@ -516,20 +533,29 @@
 
 <!-- Exibição dos produtos salvos no banco de dados -->
 @if(isset($produtosSalvos) && $produtosSalvos->isNotEmpty())
-    <h2>Produtos Salvos:</h2>
+    <h4 class="h4-produtos">Produtos Selecionados:</h4>
     <ul>
         @foreach($produtosSalvos as $produto)
-            <li>{{ $produto->nome }} - Valor: {{ $produto->valor }}</li>
+            <li class="li-produtos">{{ $produto->nome }}</li>
+			<li class="li-produtos">{{ $produto->valor }}</li>
         @endforeach
     </ul>
 @endif
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     function updateValue(select) {
         var valor = select.options[select.selectedIndex].getAttribute('data-valor');
+        var estoque = select.options[select.selectedIndex].getAttribute('data-estoque');
+
         document.getElementById('valor').value = valor;
+        document.getElementById('estoque').value = estoque;
     }
 </script>
+
+
+
+
 
 
 
