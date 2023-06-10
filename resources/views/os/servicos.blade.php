@@ -463,11 +463,15 @@
 <!-- Lista de produtos -->
 <form action="{{ route('select.product') }}" method="POST">
     @csrf
-    <select name="produto_id">
+    <select name="produto_id" onchange="updateValue(this)">
         @foreach ($produtos as $produto)
-            <option value="{{ $produto->id }}">{{ $produto->nome }}</option>
+            <option value="{{ $produto->id }}" data-valor="{{ $produto->valor_venda }}">{{ $produto->nome }}</option>
         @endforeach
     </select>
+    <label for="quantidade">Quantidade:</label>
+    <input type="text" id="quantidade" name="quantidade" value="1">
+    <label for="valor">Valor:</label>
+    <input type="text" id="valor" name="valor" value="{{ $produtos->first()->valor_venda }}" readonly>
     <button type="submit">Adicionar</button>
 </form>
 
@@ -510,9 +514,6 @@
     </form>
 @endif
 
-
-
-
 <!-- Exibição dos produtos salvos no banco de dados -->
 @if(isset($produtosSalvos) && $produtosSalvos->isNotEmpty())
     <h2>Produtos Salvos:</h2>
@@ -522,6 +523,18 @@
         @endforeach
     </ul>
 @endif
+
+<script>
+    function updateValue(select) {
+        var valor = select.options[select.selectedIndex].getAttribute('data-valor');
+        document.getElementById('valor').value = valor;
+    }
+</script>
+
+
+
+
+
 
 
 

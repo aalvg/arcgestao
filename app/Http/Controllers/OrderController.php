@@ -151,8 +151,11 @@ class OrderController extends Controller
 
 
 
-
-
+    //#############################################################################################
+    //#############################################################################################
+    //########################CÓDIGOS DOS PRODUTOS NA ORDEM DE SERVIÇO#############################
+    //#############################################################################################
+    //#############################################################################################
 
     public function showForm()
     {
@@ -160,8 +163,6 @@ class OrderController extends Controller
     
         return view('form', compact('produtos'));
     }
-    
-
 
     public function getProdutoData()
     {
@@ -173,7 +174,7 @@ class OrderController extends Controller
     }
     
     public function selectProduct(Request $request)
-{
+    {
     $produtoId = $request->produto_id;
 
     // Obtenha o produto selecionado pelo ID
@@ -189,8 +190,6 @@ class OrderController extends Controller
     $selectedProductIds[] = $request->produto_id;
     session(['selected_products' => $selectedProductIds]);
     
-    
-
     return redirect()->back()->with('success', 'Produto selecionado com sucesso!');
 }
 
@@ -203,8 +202,6 @@ public function saveProducts(Request $request)
         return redirect()->back()->with('error', 'Nenhum produto selecionado.');
     }
 
-
-
     // Salve os produtos selecionados na tabela produto_servs
     foreach ($selectedProductIds as $productId) {
         $produtoServ = new ProdutoServ();
@@ -213,7 +210,6 @@ public function saveProducts(Request $request)
         $produto = Produto::find($productId);
         $produtoServ->nome = $produto->nome;
         $produtoServ->valor = $produto->valor_venda;
-
         $produtoServ->save();
     }
 
@@ -242,10 +238,9 @@ public function removeProduct(Request $request)
 
     return redirect()->back()->with('success', 'Produto removido com sucesso!');
 }
-
-
-
-
+    //#############################################################################################
+    //########################CÓDIGOS DOS PRODUTOS NA ORDEM DE SERVIÇO#############################
+    //#############################################################################################
 
 
     public function addServico(Request $request){
