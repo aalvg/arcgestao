@@ -9,4 +9,4 @@ class Percurso extends Model
     protected $fillable = [
 		'mdfe_id', 'uf'
 	];
-}
+} 

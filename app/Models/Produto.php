@@ -28,7 +28,7 @@ class Produto extends Model
 	public function getDescricaoAnp(){
 		$lista = $this->lista_ANP();
 		return $lista[$this->codigo_anp];   
-	}
+	} 
 
 	public static function produtosDaGrade($referencia){
 		return Produto::

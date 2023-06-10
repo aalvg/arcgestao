@@ -13,7 +13,10 @@ use App\Models\Servico;
 use App\Models\Cliente;
 use App\Models\ConfigNota;
 use App\Models\Produto;
-use App\Models\ProdutoOS;
+use App\Models\Mensagem;
+use App\Models\ProdutoServ;
+
+use Illuminate\Support\Facades\Log;
 
 use App\Helpers\StockMove;
 use \Carbon\Carbon;
@@ -91,27 +94,11 @@ class OrderController extends Controller
             session()->flash('mensagem_erro', 'Erro ao gerar OS!');
         }
 
+        
+
         return redirect("/ordemServico/servicosordem/$result->id");
     }
 
-    public function addItem(Request $request)
-    {
-        $produto = Produto::where('nome', $request->input('nome_produto'))->first();
-
-        if (!$produto) {
-            // Tratar a situação em que o produto não é encontrado
-            // Por exemplo, redirecionar de volta com uma mensagem de erro
-            return redirect()->back()->with('error', 'Produto não encontrado.');
-        }
-    
-        $order = new ProdutoOS();
-        $order->produto_id = $produto->id;
-        $order->quantidade = $request->input('quantidade');
-    
-        $order->save();
-
-        return redirect("/ordemServico/servicosordem/$request->ordem_servico_id");
-    }
 
     public function servicosordem($ordemId){
         $ordem = OrdemServico::
@@ -119,16 +106,17 @@ class OrderController extends Controller
         ->first();
 
         $servicos = Servico::all();
+        $produtosSalvos = ProdutoServ::all();
         $funcionarios = Funcionario::all();
         $produtos = Produto::all();
         $temServicos = count(Servico::all()) > 0;
         $temFuncionarios = count(Funcionario::all()) > 0;
-
-
+        
          // echo json_encode($ordem->servicos);
         return view('os/servicos')
         ->with('produtos', $produtos)
         ->with('ordem', $ordem)
+        ->with('produtosSalvos', $produtosSalvos)
         ->with('relatorioJs', true)
         ->with('funcionario', true)
         ->with('servicos', $servicos)
@@ -138,6 +126,126 @@ class OrderController extends Controller
         ->with('title', 'Novo serviço para OS')
         ->with('servicoJs', true);
     }
+
+    public function salvar(Request $request)
+    {
+        $this->validate($request, [
+            'conteudo' => 'required',
+        ]);
+
+        $mensagem = Mensagem::create([
+            'conteudo' => $request->input('conteudo'),
+        ]);
+
+        if ($mensagem) {
+            session()->flash("mensagem_sucesso", "Mensagem foi salva!");
+        } else {
+            session()->flash("mensagem_erro", "Erro ao salvar mensagem!");
+        }
+
+        return redirect()->back();
+    }
+
+    
+
+
+
+
+
+
+
+    public function showForm()
+    {
+        $produtos = Produto::all();
+    
+        return view('form', compact('produtos'));
+    }
+    
+
+
+    public function getProdutoData()
+    {
+        $produtos = Produto::all();
+    
+        // Faça algo com os dados dos produtos
+        // Exemplo: retornar os produtos
+        return $produtos;
+    }
+    
+    public function selectProduct(Request $request)
+{
+    $produtoId = $request->produto_id;
+
+    // Obtenha o produto selecionado pelo ID
+    $produto = Produto::find($produtoId);
+
+    // Verifique se o produto existe
+    if (!$produto) {
+        return redirect()->back()->with('error', 'Produto não encontrado.');
+    }
+
+    // Adicione o produto selecionado à lista de produtos selecionados na sessão
+    $selectedProductIds = session('selected_products', []);
+    $selectedProductIds[] = $request->produto_id;
+    session(['selected_products' => $selectedProductIds]);
+    
+    
+
+    return redirect()->back()->with('success', 'Produto selecionado com sucesso!');
+}
+
+public function saveProducts(Request $request)
+{
+    $selectedProductIds = json_decode($request->input('produtos_selecionados'), true);
+
+    // Verifique se há produtos selecionados
+    if (empty($selectedProductIds)) {
+        return redirect()->back()->with('error', 'Nenhum produto selecionado.');
+    }
+
+
+
+    // Salve os produtos selecionados na tabela produto_servs
+    foreach ($selectedProductIds as $productId) {
+        $produtoServ = new ProdutoServ();
+        $produtoServ->produto_id = $productId;
+
+        $produto = Produto::find($productId);
+        $produtoServ->nome = $produto->nome;
+        $produtoServ->valor = $produto->valor_venda;
+
+        $produtoServ->save();
+    }
+
+    // Limpe a lista de produtos selecionados na sessão
+    session()->forget('selected_products');
+
+    return redirect()->back()->with('success', 'Produtos salvos com sucesso!');
+}
+
+public function getProdutosSalvos()
+{
+    $produtosSalvos = ProdutoServ::all();
+
+    return view('os.servicos', compact('produtosSalvos'));
+}
+
+
+public function removeProduct(Request $request)
+{
+    $produtoId = $request->produto_id;
+
+    // Remova o produto selecionado da lista de produtos selecionados na sessão
+    $selectedProductIds = session('selected_products', []);
+    $updatedSelectedProductIds = array_diff($selectedProductIds, [$produtoId]);
+    session(['selected_products' => $updatedSelectedProductIds]);
+
+    return redirect()->back()->with('success', 'Produto removido com sucesso!');
+}
+
+
+
+
 
 
     public function addServico(Request $request){
@@ -164,7 +272,7 @@ class OrderController extends Controller
             'ordem_servico_id' => $request->input('ordem_servico_id'),
             'servico_id' => $servico
         ]);
-
+        
         $ordem->save();
 
         if($result){
@@ -172,7 +280,7 @@ class OrderController extends Controller
         }else{
             session()->flash('mensagem_erro', 'Erro ao adicionar!');
         }
-
+        
         return redirect("/ordemServico/servicosordem/$request->ordem_servico_id");
     }
 
@@ -314,7 +422,7 @@ class OrderController extends Controller
     }
 
     public function updateRelatorio(Request $request){
-        $this->_validateRelatorio($request);
+        
 
         $id = $request->input('id');
         $resp = RelatorioOs::
@@ -375,7 +483,7 @@ class OrderController extends Controller
 
         $messages = [
             'servico.required' => 'O campo serviço é obrigatório.',
-            'quantidade.required' => 'O campo quantidade é obrigatório.'
+            'quantidade.required' => 'O campo quantidade é obrigatório.',
         ];
 
         $this->validate($request, $rules, $messages);

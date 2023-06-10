@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 02-Jun-2023 às 22:42
+-- Tempo de geração: 10-Jun-2023 às 14:15
 -- Versão do servidor: 10.4.11-MariaDB
 -- versão do PHP: 7.4.1
 
@@ -19,7 +19,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Banco de dados: `arc_db`
+-- Banco de dados: `db_arc`
 --
 
 -- --------------------------------------------------------
@@ -7426,6 +7426,27 @@ CREATE TABLE `medida_ctes` (
 -- --------------------------------------------------------
 
 --
+-- Estrutura da tabela `mensagens`
+--
+
+CREATE TABLE `mensagens` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `conteudo` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Extraindo dados da tabela `mensagens`
+--
+
+INSERT INTO `mensagens` (`id`, `conteudo`, `created_at`, `updated_at`) VALUES
+(1, 'Testando mensagem no banco de dados', '2023-06-09 18:18:39', '2023-06-09 18:18:39'),
+(2, 'Mais uma mensagem de teste', '2023-06-09 18:25:31', '2023-06-09 18:25:31');
+
+-- --------------------------------------------------------
+
+--
 -- Estrutura da tabela `mercado_configs`
 --
 
@@ -7604,7 +7625,9 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (1860, '2021_07_19_125033_create_curtida_produto_ecommerces_table', 1),
 (1861, '2021_08_12_074523_create_config_caixas_table', 1),
 (1862, '2021_10_31_113153_create_divisao_grades_table', 1),
-(1863, '2023_05_31_165547_create_equipamentotxt', 2);
+(1863, '2023_05_31_165547_create_equipamentotxt', 2),
+(1864, '2023_06_09_114545_add_columns_to_servico_os_table', 3),
+(1866, '2023_06_09_151141_create_mensagens_table', 4);
 
 -- --------------------------------------------------------
 
@@ -7732,7 +7755,7 @@ CREATE TABLE `ordem_servicos` (
 --
 
 INSERT INTO `ordem_servicos` (`id`, `cliente_id`, `usuario_id`, `estado`, `descricao`, `forma_pagamento`, `valor`, `desconto`, `data_registro`, `data_prevista_finalizacao`, `NfNumero`, `created_at`, `updated_at`) VALUES
-(3, 1, 1, 'pd', 'Teste descrição', 'av', '360.00', '0.00', '2023-05-31 14:17:15', '1981-01-01', 0, '2023-05-31 14:17:15', '2023-06-02 19:52:29');
+(3, 1, 1, 'pd', 'Teste descrição', 'av', '220.00', '0.00', '2023-05-31 14:17:15', '1981-01-01', 0, '2023-05-31 14:17:15', '2023-06-09 16:33:54');
 
 -- --------------------------------------------------------
 
@@ -8133,6 +8156,30 @@ CREATE TABLE `produto_pizzas` (
 -- --------------------------------------------------------
 
 --
+-- Estrutura da tabela `produto_servs`
+--
+
+CREATE TABLE `produto_servs` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `produto_id` bigint(20) UNSIGNED NOT NULL,
+  `nome` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `valor` decimal(8,2) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Extraindo dados da tabela `produto_servs`
+--
+
+INSERT INTO `produto_servs` (`id`, `produto_id`, `nome`, `valor`, `created_at`, `updated_at`) VALUES
+(9, 32, 'MOUSE OFFICE - MU2902', '19.00', '2023-06-09 20:02:14', '2023-06-09 20:02:14'),
+(10, 31, 'MOUSE GAMER 7D - MU2909', '59.00', '2023-06-09 20:09:55', '2023-06-09 20:09:55'),
+(11, 31, 'MOUSE GAMER 7D - MU2909', '59.00', '2023-06-09 20:26:45', '2023-06-09 20:26:45');
+
+-- --------------------------------------------------------
+
+--
 -- Estrutura da tabela `pushes`
 --
 
@@ -8268,16 +8315,19 @@ CREATE TABLE `servico_os` (
   `quantidade` int(11) NOT NULL,
   `status` tinyint(1) NOT NULL DEFAULT 0,
   `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `produto_id` int(11) DEFAULT NULL,
+  `nome` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `valor_venda` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Extraindo dados da tabela `servico_os`
 --
 
-INSERT INTO `servico_os` (`id`, `servico_id`, `ordem_servico_id`, `quantidade`, `status`, `created_at`, `updated_at`) VALUES
-(1, 1, 3, 1, 0, '2023-05-31 14:19:27', '2023-05-31 14:19:27'),
-(3, 3, 3, 1, 0, '2023-06-02 19:52:29', '2023-06-02 19:52:29');
+INSERT INTO `servico_os` (`id`, `servico_id`, `ordem_servico_id`, `quantidade`, `status`, `created_at`, `updated_at`, `produto_id`, `nome`, `valor_venda`) VALUES
+(5, 1, 3, 2, 0, '2023-06-09 16:26:03', '2023-06-09 16:26:03', NULL, NULL, NULL),
+(8, 2, 3, 1, 0, '2023-06-09 16:33:25', '2023-06-09 16:33:25', NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -9225,6 +9275,12 @@ ALTER TABLE `medida_ctes`
   ADD KEY `medida_ctes_cte_id_foreign` (`cte_id`);
 
 --
+-- Índices para tabela `mensagens`
+--
+ALTER TABLE `mensagens`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Índices para tabela `mercado_configs`
 --
 ALTER TABLE `mercado_configs`
@@ -9415,6 +9471,12 @@ ALTER TABLE `produto_pizzas`
   ADD PRIMARY KEY (`id`),
   ADD KEY `produto_pizzas_produto_id_foreign` (`produto_id`),
   ADD KEY `produto_pizzas_tamanho_id_foreign` (`tamanho_id`);
+
+--
+-- Índices para tabela `produto_servs`
+--
+ALTER TABLE `produto_servs`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Índices para tabela `pushes`
@@ -10092,6 +10154,12 @@ ALTER TABLE `medida_ctes`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT de tabela `mensagens`
+--
+ALTER TABLE `mensagens`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT de tabela `mercado_configs`
 --
 ALTER TABLE `mercado_configs`
@@ -10107,7 +10175,7 @@ ALTER TABLE `mesas`
 -- AUTO_INCREMENT de tabela `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1864;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1867;
 
 --
 -- AUTO_INCREMENT de tabela `motoboys`
@@ -10242,6 +10310,12 @@ ALTER TABLE `produto_pizzas`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT de tabela `produto_servs`
+--
+ALTER TABLE `produto_servs`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+
+--
 -- AUTO_INCREMENT de tabela `pushes`
 --
 ALTER TABLE `pushes`
@@ -10281,7 +10355,7 @@ ALTER TABLE `servicos`
 -- AUTO_INCREMENT de tabela `servico_os`
 --
 ALTER TABLE `servico_os`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de tabela `suprimento_caixas`

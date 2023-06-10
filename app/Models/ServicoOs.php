@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class ServicoOs extends Model
 {
     protected $fillable = [
-    	'servico_id', 'ordem_servico_id', 'quantidade', 'status'
+    	'servico_id', 'ordem_servico_id', 'quantidade', 'status', 'produto_id', 'nome', 'valor_venda'
     ];
 
     public function servico(){
@@ -16,5 +16,10 @@ class ServicoOs extends Model
 
     public function ordemServico(){
         return $this->belongsTo(OrdemServico::class, 'ordem_servico_id');
+    }
+
+    public function produto()
+    {
+        return $this->belongsTo(Produto::class, 'produto_id');
     }
 }

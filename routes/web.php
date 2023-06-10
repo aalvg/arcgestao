@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\OrderController;
+
 
 
 Route::group(['prefix' => '/'], function(){
@@ -752,7 +754,7 @@ Route::middleware(['validaAcesso'])->group(function () {
 
 	Route::group(['prefix' => 'ordemServico'],function(){
 		Route::get('/', 'OrderController@index');
-		Route::post('/addItem', 'OrderController@addItem')->name('addItem');
+		
 		Route::get('/new', 'OrderController@new');
 		Route::get('/servicosordem/{id}', 'OrderController@servicosordem');
 		Route::get('/deleteServico/{id}', 'OrderController@deleteServico');
@@ -763,11 +765,23 @@ Route::middleware(['validaAcesso'])->group(function () {
 		Route::post('/alterarEstado', 'OrderController@alterarEstadoPost');
 		Route::get('/filtro', 'OrderController@filtro');
 
+		// web.php
+		Route::post('/remove-product', [OrderController::class, 'removeProduct'])->name('remove.product');
+		Route::get('/form', [OrderController::class, 'showForm']);
+		Route::post('/save-products', [OrderController::class, 'saveProducts'])->name('save.products');
+		Route::post('/select-product', [OrderController::class, 'selectProduct'])->name('select.product');
+		Route::get('/produtos-salvos', [OrderController::class, 'getProdutosSalvos'])->name('produtos.salvos');
+
+
+
+		// web.php
+		Route::post('/salvar-mensagem', 'OrderController@salvar')->name('salvarMensagem');
 		Route::post('/addRelatorio', 'OrderController@saveRelatorio');
 		Route::post('/updateRelatorio', 'OrderController@updateRelatorio');
 		Route::get('/cashFlowFilter', 'OrderController@cashFlowFilter');
 		Route::post('/save', 'OrderController@save');
 		Route::post('/addServico', 'OrderController@addServico');
+		Route::post('/ordemServico/{id}/addItem', 'OrderController@addItem')->name('ordemServico.addItem');
 		Route::post('/find', 'OrderController@find');
 
 		Route::get('/print/{id}', 'OrderController@print');

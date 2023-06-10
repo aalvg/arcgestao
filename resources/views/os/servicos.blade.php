@@ -460,97 +460,82 @@
 
 
 
-
-
-
-
-
-<form method="POST" action="{{ route('addItem') }}">
-	@csrf
-    <!-- Campos do formulário -->
-
-    <select id="produto" name="produto_id" onchange="atualizarValorVenda()">
+<!-- Lista de produtos -->
+<form action="{{ route('select.product') }}" method="POST">
+    @csrf
+    <select name="produto_id">
         @foreach ($produtos as $produto)
-            <option value="{{ $produto->id }}" data-valor-venda="{{ $produto->valor_venda }}" data-quantidade="{{ $produto->quantidade }}">{{ $produto->nome }}</option>
+            <option value="{{ $produto->id }}">{{ $produto->nome }}</option>
         @endforeach
     </select>
+    <button type="submit">Adicionar</button>
+</form>
 
-    <input type="text" name="valor_venda" id="valor-venda" readonly>
-
-    <input type="text" name="quantidade" id="quantidade" readonly>
-	<select id="produto" name="produto_id">
-        <!-- Opções do produto -->
-    </select>
-    <input type="number" name="quantidade" placeholder="Quantidade">
-
-
-	<table id="tabela-produtos">
+<!-- Seção para exibir os produtos selecionados -->
+@if(session('selected_products') && is_array(session('selected_products')))
+    <h2>Produtos Selecionados:</h2>
+    <table>
         <thead>
             <tr>
-                <th>Produto</th>
-				<th>Valor</th>
-                <th>Ações</th>
+                <th>Nome</th>
+                <th>Valor</th>
+                <th>Ação</th>
             </tr>
         </thead>
         <tbody>
-            <!-- Aqui serão adicionadas as linhas da tabela dinamicamente -->
+            @foreach(session('selected_products') as $produtoId)
+                @php
+                    $produto = App\Models\Produto::find($produtoId);
+                @endphp
+                @if($produto)
+                    <tr>
+                        <td>{{ $produto->nome }}</td>
+                        <td>{{ $produto->valor_venda }}</td>
+                        <td>
+                            <form action="{{ route('remove.product') }}" method="POST">
+                                @csrf
+                                <input type="hidden" name="produto_id" value="{{ $produtoId }}">
+                                <button type="submit">Remover</button>
+                            </form>
+                        </td>
+                    </tr>
+                @endif
+            @endforeach
         </tbody>
     </table>
-
-    <!-- Outros campos do formulário -->
-
-    <button type="button" onclick="adicionarProduto()">Adicionar Produto</button>
-	<button type="submit">Salvar</button>
-</form>
-
-<script>
-    function atualizarValorVenda() {
-        var select = document.querySelector('select[name="produto_id"]');
-        var valorVendaInput = document.querySelector('#valor-venda');
-        var quantidadeInput = document.querySelector('#quantidade');
-        var valorVenda = select.options[select.selectedIndex].getAttribute('data-valor-venda');
-        var quantidade = select.options[select.selectedIndex].getAttribute('data-quantidade');
-        valorVendaInput.value = valorVenda;
-        quantidadeInput.value = quantidade;
-    }
+    <form action="{{ route('save.products') }}" method="POST">
+        @csrf
+        <input type="hidden" name="produtos_selecionados" value="{{ json_encode(session('selected_products')) }}">
+        <button type="submit">Salvar</button>
+    </form>
+@endif
 
 
-	function adicionarProduto() {
-        var produtoSelect = document.getElementById('produto');
-        var produtoId = produtoSelect.value;
-        var produtoNome = produtoSelect.options[produtoSelect.selectedIndex].text;
-		var produtoValor = produtoSelect.options[produtoSelect.selectedIndex].getAttribute('data-valor-venda');
 
-        if (produtoId !== '') {
-            var tabelaProdutos = document.getElementById('tabela-produtos');
-            var tbody = tabelaProdutos.getElementsByTagName('tbody')[0];
 
-            var row = document.createElement('tr');
+<!-- Exibição dos produtos salvos no banco de dados -->
+@if(isset($produtosSalvos) && $produtosSalvos->isNotEmpty())
+    <h2>Produtos Salvos:</h2>
+    <ul>
+        @foreach($produtosSalvos as $produto)
+            <li>{{ $produto->nome }} - Valor: {{ $produto->valor }}</li>
+        @endforeach
+    </ul>
+@endif
 
-            var colProduto = document.createElement('td');
-            colProduto.textContent = produtoNome;
-            row.appendChild(colProduto);
 
-			var colValor = document.createElement('td');
-            colValor.textContent = produtoValor;
-            row.appendChild(colValor);
 
-            var colAcoes = document.createElement('td');
-            colAcoes.innerHTML = '<button type="button" onclick="removerProduto(this)">Remover</button>';
-            row.appendChild(colAcoes);
 
-            tbody.appendChild(row);
 
-            // Limpa a seleção do campo de seleção
-            produtoSelect.value = '';
-        }
-    }
 
-    function removerProduto(button) {
-        var row = button.parentNode.parentNode;
-        row.parentNode.removeChild(row);
-    }
-</script>
+
+
+
+
+
+
+
+
 
 
 
