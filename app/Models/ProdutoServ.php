@@ -11,3 +11,5 @@ class ProdutoServ extends Model
     protected $fillable = ['produto_id', 'nome', 'valor'];
 
 }
+
+

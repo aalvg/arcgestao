@@ -1,3 +1,20 @@
+.align-items-center {
+    -webkit-box-align: center !important;
+    -ms-flex-align: center !important;
+    align-items: center !important;
+}
+
+.row {
+    --bs-gutter-x: 1.5rem;
+    --bs-gutter-y: 0;
+    display: flex;
+    flex-wrap: wrap;
+    
+    margin-top: calc(-1 * var(--bs-gutter-y));
+    margin-right: calc(-.5 * var(--bs-gutter-x));
+    margin-left: calc(-.5 * var(--bs-gutter-x));
+}
+
 .formulario{
     font-size: 13px;
     padding: 15px;
@@ -5,11 +22,20 @@
 }
 
 .box-menores{
-    width:60px;
-    margin: 0;
-    font-family: inherit;
-    font-size: inherit;
-    line-height: inherit;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    border: 1px solid #E4E6EF;
+    outline: none !important;
+    border-radius: 0.42rem;
+    height: 40px;
+    width:300px;
+    width:auto;
+    line-height: 0;
   }
 .h4-produtos{
     font-size: 1.5rem;
@@ -24,5 +50,91 @@
 
 .li-produtos{
     font-size: 1rem;
+}
 
+.box-produtoslist{
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    border: 1px solid #E4E6EF;
+    outline: none !important;
+    border-radius: 0.42rem;
+    height: 40px;
+    width:auto;
+    line-height: 0;
+}
+
+.form-control-quantidade{
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    border: 1px solid #E4E6EF;
+    outline: none !important;
+    border-radius: 0.42rem;
+    height: 40px;
+    width: 50px;
+    line-height: 0;
+}
+
+.form-control-valor{
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    border: 1px solid #E4E6EF;
+    outline: none !important;
+    border-radius: 0.42rem;
+    height: 40px;
+    width: 80px;
+    line-height: 0;
+}
+
+.form-control-estoque{
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    border: 1px solid #E4E6EF;
+    outline: none !important;
+    border-radius: 0.42rem;
+    height: 40px;
+    width: 80px;
+    line-height: 0;
+}
+/*muda a distancia entre as labels produtos, quantidade, preço e estoque */
+.label-spacing1 {
+    margin-right: 460px;
+    padding-left: 20px;
+}
+.label-spacing2 {
+    margin-right: 20px;
+}
+.label-spacing3 {
+    margin-right: 50px;
+}
+.label-spacing4 {
+    margin-right: 50px;
+}
+
+th {
+    font-weight: normal;
+    padding-left: 20px;
+}
+
+td {
+    padding-left: 20px;
 }

@@ -4,7 +4,6 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 <link rel="stylesheet" type="text/css" href="{{ asset('css/servicos.css') }}">
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 
 <div class="card card-custom gutter-b">
@@ -465,128 +464,175 @@
 
 
 
+<!-- #############################################################################################################-->
+<!-- #############################################################################################################-->
+<!-- ###################################Lista de produtos ########################################################-->
+<!-- #############################################################################################################-->
+<!-- #############################################################################################################-->
+<hr>
+<div class="row">
+    <div class="form-group validated col-sm-12 col-lg-12">
+        <h4 style="padding-left: 20px">Produtos da OS</h4>
+    </div>
+
+    <div class="form-group validated col-sm-12 col-lg-12">
+        <div class="kt-section kt-section--first">
+            <div class="kt-section__body">
+                <table class="datatable-table" style="max-width: 100%; overflow: scroll">
+                    <thead class="datatable-head">
+                        <tr class="datatable-row" style="left: 0px;">
+                            <th>Produtos</th>
+                            <th>Quant</th>
+                            <th>Preço</th>
+                            <th>Estoque</th>
+                        </tr>
+                    </thead>
+                    <tbody class="datatable-body">
+                        <tr class="datatable-row">
+                            <td>
+                                <div class="d-flex justify-content-start align-items-center">
+                                    <form class="formulario" action="{{ route('select.product') }}" method="POST">
+                                        @csrf
+                                        <div class="d-flex">
+                                            <select class="box-produtoslist" id="kt-select2_1" name="produto_id" tabindex="-1" aria-hidden="true" onchange="updateValue(this)">
+                                                @foreach ($produtos as $produto)
+                                                    <option value="{{ $produto->id }}" data-valor="{{ $produto->valor_venda }}" data-estoque="{{ $produto->estoque->quantidade }}">{{ $produto->nome }}</option>
+                                                @endforeach
+                                            </select>
+                                            <input class="form-control-quantidade ml-2" type="text" id="quantidade" name="quantidade" value="">
+                                            <input class="form-control-valor ml-2" type="text" id="valor" name="valor" value="{{ $produtos->first()->valor_venda }}" readonly>
+                                            <input class="form-control-estoque ml-2" type="text" id="estoque" name="estoque" value="{{ $produtos->first()->estoque->quantidade }}" readonly>
+                                            <button type="submit" class="btn btn-success">Adicionar</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 
 
-
-
-
-<!-- Lista de produtos -->
-<form class="formulario" action="{{ route('select.product') }}" method="POST">
-    @csrf
-    <select class="select2-selection__rendered" name="produto_id" role="textbox" aria-readonly="true" onchange="updateValue(this)">
-        @foreach ($produtos as $produto)
-            <option value="{{ $produto->id }}" data-valor="{{ $produto->valor_venda }}" data-estoque="{{ $produto->estoque->quantidade }}">{{ $produto->nome }}</option>
-        @endforeach
-    </select>
-    <label for="quantidade">Quantidade:</label>
-    <input class="box-menores" type="text" id="quantidade" name="quantidade" value="1">
-    <label for="valor">Valor:</label>
-    <input class="box-menores" type="text" id="valor" name="valor" value="{{ $produtos->first()->valor_venda }}" readonly>
-    <label for="estoque">Estoque:</label>
-    <input class="box-menores" type="text" id="estoque" name="estoque" value="{{ $produtos->first()->estoque->quantidade }}" readonly>
-   	<button class="btn btn-success" type="submit">Adicionar</button>
-
-</form>
-
-
-
-
-
+<!-- #############################################################################################################-->
+<!-- #############################################################################################################-->
 <!-- Seção para exibir os produtos selecionados -->
+<!-- #############################################################################################################-->
+<!-- #############################################################################################################-->
+<hr>
 @if(session('selected_products') && is_array(session('selected_products')))
-    <h2>Produtos Selecionados:</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Nome</th>
-                <th>Valor</th>
-                <th>Ação</th>
+    <h6 style="padding: 20px">Produtos Selecionados:</h6>
+    <table class="datatable-table" style="max-width: 100%; overflow: scroll">
+        <thead class="datatable-head">
+            <tr class="datatable-row" style="left: 0px;">
+                <th class="datatable-cell datatable-cell-sort">Nome</th>
+                <th class="datatable-cell datatable-cell-sort">Quantidade</th>
+                <th class="datatable-cell datatable-cell-sort">Valor</th>
+                <th class="datatable-cell datatable-cell-sort">Ação</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody class="datatable-body">
             @foreach(session('selected_products') as $produtoId)
                 @php
                     $produto = App\Models\Produto::find($produtoId);
                 @endphp
                 @if($produto)
-                    <tr>
-                        <td>{{ $produto->nome }}</td>
-                        <td>{{ $produto->valor_venda }}</td>
+                    <tr class="datatable-row">
+                        <td><input class="form-control-valor ml-2" style="width: 100%;" type="text" id="produto_id" name="produto_id[]" value="{{ $produto->nome }}" readonly></td>
+                        <td><input class="form-control-valor ml-2" type="text" id="quantidade" name="quantidade[]" value="0" readonly></td>
+                        <td><input class="form-control-valor ml-2" type="text" id="valor" name="valor[]" value="{{ $produto->valor_venda }}" readonly></td>
                         <td>
-                            <form action="{{ route('remove.product') }}" method="POST">
-                                @csrf
-                                <input type="hidden" name="produto_id" value="{{ $produtoId }}">
-                                <button type="submit">Remover</button>
-                            </form>
+                            <div class="d-flex">
+                                <form action="{{ route('remove.product') }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="produto_id" value="{{ $produtoId }}">
+                                    <button type="submit" class="btn btn-danger">
+                                        <span class="la la-trash"></span>
+                                    </button>
+                                </form>
+                                <form action="{{ route('save.products') }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="produtos_selecionados" value="{{ json_encode(session('selected_products')) }}">
+                                    <button type="submit" class="btn btn-success ml-2">Salvar</button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                 @endif
             @endforeach
         </tbody>
     </table>
-    <form action="{{ route('save.products') }}" method="POST">
-        @csrf
-        <input type="hidden" name="produtos_selecionados" value="{{ json_encode(session('selected_products')) }}">
-        <button type="submit">Salvar</button>
-    </form>
 @endif
+
+
+
+
 
 <!-- Exibição dos produtos salvos no banco de dados -->
-@if(isset($produtosSalvos) && $produtosSalvos->isNotEmpty())
-    <h4 class="h4-produtos">Produtos Selecionados:</h4>
-    <ul>
-        @foreach($produtosSalvos as $produto)
-            <li class="li-produtos">{{ $produto->nome }}</li>
-			<li class="li-produtos">{{ $produto->valor }}</li>
-        @endforeach
-    </ul>
-@endif
+<hr>
+<div>
+	<h6 style="padding: 20px">Produtos Salvos:</h6>
+	<table class="datatable-table">
+		<thead class="datatable-head">
+			<tr>
+				<th>Produto:</th>
+				<th>Quantidade</th>
+				<th>Preço:</th>
+			</tr>
+		</thead>
+		<tbody class="datatable-body">
+			@if(isset($produtosSalvos) && $produtosSalvos->isNotEmpty())
+			@php
+    			$total = 0;
+			@endphp
+				@foreach($produtosSalvos as $produto)
+					@php
+    					$subtotal = $produto->valor * $produto->produto_id;
+    					$total += $subtotal;
+					@endphp
+						<tr class="datatable-row">
+							<td><input class="form-control-valor ml-2" style="width:100%" type="text" id="produto_id" name="produto_id" value="{{ $produto->nome }}" readonly></td>
+							<td><input class="form-control-valor ml-2" type="text" id="quantidade" name="quantidade" value="{{ $produto->quantidade }}" readonly></td>
+							<td><input class="form-control-valor ml-2" type="text" id="valor" name="valor" value="{{ $produto->valor }}" readonly></td>
+							
+						</tr>
+						
+				@endforeach
+			@else
+				<tr class="datatable-row">
+					<td colspan="4">Nenhum produto salvo</td>
+				</tr>
+			@endif
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    function updateValue(select) {
-        var valor = select.options[select.selectedIndex].getAttribute('data-valor');
-        var estoque = select.options[select.selectedIndex].getAttribute('data-estoque');
+				<tr>
+					<th style="font-weight: bold;">Total</th>
+					<th style="font-weight: bold;">=</th>
+					<td style="font-weight: bold;"><input class="form-control-valor ml-2" type="text" id="total" name="total" value="{{ $total }}" readonly></td>
+				</tr>
+		</tbody>
+		
+	</table>
+</div>
 
-        document.getElementById('valor').value = valor;
-        document.getElementById('estoque').value = estoque;
-    }
-</script>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script>
+   		function updateValue(select) {
+        	var valor = select.options[select.selectedIndex].getAttribute('data-valor');
+        	var estoque = select.options[select.selectedIndex].getAttribute('data-estoque');
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        	document.getElementById('valor').value = valor;
+        	document.getElementById('estoque').value = estoque;
+    	}
+		$(document).ready(function() {
+    		$('.box-produtoslist').select2({
+        		language: {
+            		noResults: function() {
+                		return "Nenhum resultado encontrado";
+            		}
+        		}
+    		});
+		});
+	</script>
 @endsection
