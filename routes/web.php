@@ -766,10 +766,10 @@ Route::middleware(['validaAcesso'])->group(function () {
 		Route::get('/filtro', 'OrderController@filtro');
 
 		// web.php
-		Route::post('/remove-product', [OrderController::class, 'removeProduct'])->name('remove.product');
+		Route::post('/remove/product', 'OrderController@removeProduct')->name('remove.product');
 		Route::get('/form', [OrderController::class, 'showForm']);
-		Route::post('/save-products', [OrderController::class, 'saveProducts'])->name('save.products');
-		Route::post('/select-product', [OrderController::class, 'selectProduct'])->name('select.product');
+		Route::post('/save-product', 'OrderController@salvarProduto')->name('save.product');
+		Route::get('/obter-estoque/{produtoId}', 'OrderController@obterEstoque');
 		Route::get('/produtos-salvos', [OrderController::class, 'getProdutosSalvos'])->name('produtos.salvos');
 
 

@@ -15,7 +15,7 @@
 					@foreach($ordem->servicos as $s)
 					<tr>
 					  <td class="form-control form-control-lg" >{{$s->quantidade}}. {{$s->servico->nome}}</td>
-					  <td class="form-control form-control-lg" >R$ {{number_format($s->servico->valor * $s->quantidade, 2)}}</td>
+					  <td class="form-control form-control-lg" >R$ {{number_format($s->servico->valor * $s->quantidades, 2)}}</td>
 					</tr>
 				</tbody>
 				@endforeach

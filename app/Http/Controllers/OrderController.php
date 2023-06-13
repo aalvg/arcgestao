@@ -173,116 +173,128 @@ class OrderController extends Controller
         return $produtos;
     }
     
-    public function selectProduct(Request $request)
+
+    public function salvarProduto(Request $request)
+    {
+        $selectedProductIds = $request->input('produtos_selecionados');
+        $unidades = $request->input('unidades');
+    
+        // Verifique se há produtos selecionados
+        if (empty($selectedProductIds)) {
+            return redirect()->back()->with('error', 'Nenhum produto selecionado.');
+        }
+    
+        // Salve os produtos selecionados na tabela produto_servs
+        foreach ($selectedProductIds as $index => $productId) {
+            $produtoServ = new ProdutoServ();
+            $produtoServ->produto_id = $productId;
+            $produtoServ->unidades = $unidades[$index];
+    
+            $produto = Produto::find($productId);
+            $produtoServ->nome = $produto->nome;
+            $produtoServ->valor = $produto->valor_venda;
+            $produtoServ->save();
+        }
+    
+        // Limpe a lista de produtos selecionados na sessão
+        session()->forget('selected_products');
+    
+        return redirect()->back()->with('success', 'Produtos salvos com sucesso!');
+    }
+    
+    
+// app/Http/Controllers/ProdutoController.php
+public function obterEstoque($produtoId)
+{
+    $produto = Produto::find($produtoId);
+    if ($produto) {
+        $estoque = $produto->estoque->quantidade;
+        
+        // ... lógica de atualização do estoque ...
+        
+        // Retorna o estoque atualizado
+        return response()->json(['estoque' => $estoque]);
+    } else {
+        return response()->json(['error' => 'Produto não encontrado'], 404);
+    }
+}
+
+    public function getProdutosSalvos()
+    {
+    $produtosSalvos = ProdutoServ::all();
+    $produto_total = 0;
+
+    if ($produtosSalvos->isEmpty()) {
+        // Caso a lista de produtos esteja vazia
+        $produto_total = 0;
+    } else {
+        // Código para calcular o valor total dos produtos
+        foreach ($produtosSalvos as $produto) {
+            $subtotal = $produto->valor * $produto->unidades;
+            $produto_total += $subtotal;
+        }
+    }
+    session()->put('produto_total', $produto_total);
+    session()->put('servico_total', 0); // Defina o valor inicial para o serviço como 0 ou calcule-o aqui se necessário
+    
+    return view('os.servicos', compact('produtosSalvos', 'produto_total'));
+    
+    }
+
+
+    public function removeProduct(Request $request)
     {
         $produtoId = $request->produto_id;
     
-        // Obtenha o produto selecionado pelo ID
-        $produto = Produto::find($produtoId);
+        // Encontre o produto a ser removido
+        $produtoServ = ProdutoServ::find($produtoId);
     
-        // Verifique se o produto existe
-        if (!$produto) {
+        if (!$produtoServ) {
             return redirect()->back()->with('error', 'Produto não encontrado.');
         }
     
-        // Verifique se o estoque do produto é maior que zero
-        if ($produto->estoque->quantidade <= 0) {
-            return redirect()->back()->with('error', 'Produto sem estoque disponível.');
-        }
+        // Remova o produto do banco de dados
+        $produtoServ->delete();
     
-        // Adicione o produto selecionado à lista de produtos selecionados na sessão
-        $selectedProductIds = session('selected_products', []);
-        $selectedProductIds[] = $request->produto_id;
-        session(['selected_products' => $selectedProductIds]);
-        
-        return redirect()->back()->with('success', 'Produto selecionado com sucesso!');
+        return redirect()->back()->with('success', 'Produto removido com sucesso!');
     }
-
-public function saveProducts(Request $request)
-{
-    $selectedProductIds = json_decode($request->input('produtos_selecionados'), true);
-
-    // Verifique se há produtos selecionados
-    if (empty($selectedProductIds)) {
-        return redirect()->back()->with('error', 'Nenhum produto selecionado.');
-    }
-
-    // Salve os produtos selecionados na tabela produto_servs
-    foreach ($selectedProductIds as $productId) {
-        $produtoServ = new ProdutoServ();
-        $produtoServ->produto_id = $productId;
-
-        $produto = Produto::find($productId);
-        $produtoServ->nome = $produto->nome;
-        $produtoServ->valor = $produto->valor_venda;
-        $produtoServ->save();
-    }
-
-    // Limpe a lista de produtos selecionados na sessão
-    session()->forget('selected_products');
-
-    return redirect()->back()->with('success', 'Produtos salvos com sucesso!');
-}
-
-public function getProdutosSalvos()
-{
-    $produtosSalvos = ProdutoServ::all();
-
-    return view('os.servicos', compact('produtosSalvos'));
-}
-
-
-public function removeProduct(Request $request)
-{
-    $produtoId = $request->produto_id;
-
-    // Remova o produto selecionado da lista de produtos selecionados na sessão
-    $selectedProductIds = session('selected_products', []);
-    $updatedSelectedProductIds = array_diff($selectedProductIds, [$produtoId]);
-    session(['selected_products' => $updatedSelectedProductIds]);
-
-    return redirect()->back()->with('success', 'Produto removido com sucesso!');
-}
+    
     //#############################################################################################
     //########################CÓDIGOS DOS PRODUTOS NA ORDEM DE SERVIÇO#############################
     //#############################################################################################
 
 
-    public function addServico(Request $request){
-        $this->_validateServicoOs($request);
-
-        $servicoOs = new ServicoOs();
-
-        $servico = $request->input('servico');
-        $servico = explode("-", $servico);
-        $servico = $servico[0];
-
-        $ordem = OrdemServico::
-        where('id', $request->input('ordem_servico_id'))
-        ->first();
-
-        $servicoObj = Servico::
-        where('id', $servico)
-        ->first();
-
-        $ordem->valor += $servicoObj->valor * $request->input('quantidade');
-
-        $result = $servicoOs->create([
-            'quantidade' => $request->input('quantidade'),
-            'ordem_servico_id' => $request->input('ordem_servico_id'),
-            'servico_id' => $servico
+    public function addServico(Request $request)
+    {
+        // Valide os dados recebidos do formulário
+        $this->validate($request, [
+            'quantidade' => 'required|numeric',
+            'ordem_servico_id' => 'required|exists:ordem_servicos,id',
+            'servico' => 'required|exists:servicos,id',
         ]);
-        
-        $ordem->save();
-
-        if($result){
-            session()->flash("mensagem_sucesso", "Serviço adicionado!");
-        }else{
-            session()->flash('mensagem_erro', 'Erro ao adicionar!');
+    
+        // Crie uma nova instância de ServicoOs e atribua os valores dos campos
+        $servicoOs = new ServicoOs();
+        $servicoOs->quantidade = $request->input('quantidade');
+        $servicoOs->ordem_servico_id = $request->input('ordem_servico_id');
+        $servicoOs->servico_id = $request->input('servico');
+    
+        // Salve o novo registro no banco de dados
+        $result = $servicoOs->save();
+    
+        if ($result) {
+            // O serviço foi salvo com sucesso
+            session()->flash('mensagem_sucesso', 'Serviço adicionado!');
+        } else {
+            // Ocorreu um erro ao salvar o serviço
+            session()->flash('mensagem_erro', 'Erro ao adicionar o serviço!');
         }
-        
-        return redirect("/ordemServico/servicosordem/$request->ordem_servico_id");
+    
+        // Redirecione de volta para a página de detalhes da ordem de serviço
+        return redirect("/ordemServico/servicosordem/{$request->ordem_servico_id}");
     }
+    
+    
 
     public function deleteServico($id){
         $obj = ServicoOs
