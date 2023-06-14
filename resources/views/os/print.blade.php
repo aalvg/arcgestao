@@ -2,43 +2,113 @@
 @section('content')
 
 <div class="row corpo-exame">
+	<!-- #########################          PRODUTOS         ############################-->
+	@if(isset($produtosSalvos) && $produtosSalvos->isNotEmpty())
+    <div class="col s12" style="border-bottom: 1px solid #000; padding-bottom: 10px;">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col" class="lab" style="width: 100%;">Produtos:</th>
+                    <th scope="col" class="lab" style="width: 100%;">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @php
+                    $produto_total = isset($produto_total) ? $produto_total : 0;
+                @endphp
+                @foreach($produtosSalvos as $produto)
+                    @php
+                        $subtotal = $produto->valor * $produto->unidades;
+                        $valorTotal = $produto->valor * $produto->unidades;
+                        $produto_total += $valorTotal;
+                    @endphp
+                    <tr>
+                        <td class="form-control form-control-lg">{{$produto->unidades}}. {{$produto->nome}}</td>
+                        <td class="form-control form-control-lg">R$ {{number_format($produto->valor * $produto->unidades, 2, ',', '.')}}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+@endif
+<!-- #########################          FIM PRODUTOS          ############################-->
+<!-- #########################          VALORES PRODUTOS          ############################-->
 	<div class="col s12">
-		<table class="table table-striped" >
-			<thead>
-				<tr>
-					<th scope="col" class="lab" style="width: 100%;">Serviços:</th>
-					<th scope="col" class="lab" style="width: 100%;" >Total</th>
-				</tr>
-			</thead>
+		@php
+		$produtoTotal = 0;
+		@endphp
+		
+		@foreach($produtosSalvos as $produto)
+			<div class="col s12 right-align">
+				@php
+				$produtoTotal += $produto->valor * $produto->unidades;
+				@endphp
+			</div>
+		@endforeach
+
+<!-- #########################          SERVIÇOS          ############################-->
+		<div class="col s12" style="border-bottom: 1px solid #000; padding-bottom: 10px;">
+			<table class="table table-striped" >
+				<thead>
+					<tr>
+						<th scope="col" class="lab" style="width: 100%;">Serviços:</th>
+						<th scope="col" class="lab" style="width: 100%;" >Total</th>
+					</tr>
+				</thead>
 				<tbody>
 					@php $total = 0; @endphp
 					@foreach($ordem->servicos as $s)
 					<tr>
-					  <td class="form-control form-control-lg" >{{$s->quantidade}}. {{$s->servico->nome}}</td>
-					  <td class="form-control form-control-lg" >R$ {{number_format($s->servico->valor * $s->quantidades, 2)}}</td>
+						<td class="form-control form-control-lg" >{{$s->quantidade}}. {{$s->servico->nome}}</td>
+						<td class="form-control form-control-lg" >R$ {{number_format($s->quantidade * $s->servico->valor, 2, ',', '.')}}</td>
 					</tr>
 				</tbody>
-				@endforeach
-		</table>
-	</div>
-	
-	<div class="col s12">
-		@php $total = 0; @endphp
-		@foreach($ordem->servicos as $s)
-		<div class="col s12 right-align">
-				@php $total += $s->servico->valor * $s->quantidade; @endphp
+					@endforeach
+			</table>
 		</div>
-		@endforeach
+		
+		<div class="col s12">
+			<!-- 1 - FAZ TODO O CALCULO DOS PREÇOS DE SERVIÇOS E PRODUTOS -->
+			@php
+			$total = 0;
+			$produtoTotal = 0;
+			@endphp
+			
+			@foreach($ordem->servicos as $s)
+				<div class="col s12 right-align">
+					@php
+					$total += $s->servico->valor * $s->quantidade;
+					@endphp
+				</div>
+			@endforeach
+			
+			@foreach($produtosSalvos as $produto)
+				<div class="col s12 right-align">
+					@php
+					$produtoTotal += $produto->valor * $produto->unidades;
+					@endphp
+				</div>
+			@endforeach
+			<style>
+				.div1, .div2, .div3 {
+					display: block;
+					width: 100%;
+					margin-bottom: 20px;
+					/* Outros estilos */
+				}
+			</style>
+			<div class="div1 right-align" style="padding-top: 20px">
+				<span class="lab">Valor Total serviços: {{ number_format($total, 2, ',', '.') }}</span>
+			</div>
+			<div class="div2 right-align" style="margin-bottom: 30px !important">
+				<span class="lab" >Valor Total produtos: {{ number_format($produtoTotal, 2, ',', '.') }}</span>
+			</div>
 
-		@if($ordem->desconto > 0)
-		<div class="col s12 left-align">
-			<h6>Desconto: {{number_format($ordem->desconto, 2, ',', '.')}}</h6>
-		</div>
-		@endif
-		<div class="col s12 right-align">
-
-			<span class="lab">Valor Total da OS: {{number_format($total - $ordem->desconto, 2, ',', '.')}}</span>
-		</div>
+			<div class="div3 right-align">
+				<span class="lab"  style="font-size: 13px !important; color: red !important;">Valor Total da OS: {{ number_format($produtoTotal + $total, 2, ',', '.') }}</span>
+			</div>
+			<!-- FIM DO CALCULO DOS PREÇOS DE SERVIÇOS E PRODUTOS -->
+			
 
 							<!-- 1 - FORMULARIOS COM DADOS DOS EQUIPAMENTOS -->
 							<div class="row" style="width: 100%;">

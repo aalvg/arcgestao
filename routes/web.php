@@ -790,7 +790,7 @@ Route::middleware(['validaAcesso'])->group(function () {
 		Route::get('/deleteFuncionario/{id}', 'OrderController@deleteFuncionario');
 		Route::post('/saveFuncionario', 'OrderController@saveFuncionario');
 
-		Route::get('/alterarStatusServico/{id}', 'OrderController@alterarStatusServico');
+		
 		Route::get('/imprimir/{id}', 'OrderController@imprimir');
 
 		Route::post('/setaDesconto', 'OrderController@setaDesconto');

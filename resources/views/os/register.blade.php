@@ -40,20 +40,6 @@
 											</div>
 										</div>
 									</div>
-									<div class="row">
-										<div class="form-group validated col-sm-12 col-lg-12">
-											<label class="col-form-label">Descrição</label>
-											<div class="">
-												<textarea class="form-control" name="descricao" rows="3">{{{ isset($os->descricao) ? $os->descricao : old('descricao') }}}</textarea>
-												@csrf
-												@if($errors->has('descricao'))
-												<div class="invalid-feedback">
-													{{ $errors->first('descricao') }}
-												</div>
-												@endif
-											</div>
-										</div>
-									</div>
 								</div>
 							</div>
 						</div>

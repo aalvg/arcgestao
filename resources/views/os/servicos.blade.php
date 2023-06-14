@@ -10,6 +10,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 <link rel="stylesheet" type="text/css" href="{{ asset('css/servicos.css') }}">
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- ################################### SCRIPT DE PRODUTOS ########################################################-->
 <script>
 
 function updateValue(select) {
@@ -49,6 +50,30 @@ $(document).ready(function() {
 });
 
 
+</script>
+
+<!-- ################################### SCRIPT DE SERVIÇOS ########################################################-->
+<script>
+    $(document).ready(function() {
+        $('#kt_select2_1').change(function() {
+            var selectedOption = $('#kt_select2_1').find(':selected');
+            var valorUnitario = selectedOption.data('valor');
+            var quantidade = $('#quantidade').val();
+            var valorTotal = parseFloat(valorUnitario) * parseInt(quantidade);
+
+            $('#valor').val(valorUnitario);
+            $('#valor_total').val(valorTotal.toFixed(2));
+        });
+
+        $('#quantidade').keyup(function() {
+            var selectedOption = $('.servico-option:selected');
+            var valorUnitario = selectedOption.data('valor');
+            var quantidade = $(this).val();
+            var valorTotal = parseFloat(valorUnitario) * parseInt(quantidade);
+
+            $('#valor_total').val(valorTotal.toFixed(2));
+        });
+    });
 </script>
 
 
@@ -99,139 +124,6 @@ $(document).ready(function() {
 		</div>
 	</div>
 
-	<div class="row" id="content" style="display: block">
-		<div class="content d-flex flex-column flex-column-fluid" id="kt_content">
-
-			<div class="container">
-				<div class="card card-custom gutter-b example example-compact">
-					<div class="col-lg-12">
-						<!--begin::Portlet-->
-
-						<form method="post" action="/ordemServico/addServico">
-							@csrf
-
-							<div class="row">
-								<input type="hidden" id="_token" value="{{ csrf_token() }}">
-								<input type="hidden" name="ordem_servico_id" name="" value="{{$ordem->id}}">
-
-
-								<div class="col-xl-12">
-
-									<div class="form-group validated col-sm-12 col-lg-12">
-										<h4>Serviços da OS</h4>
-
-										<div class="kt-section kt-section--first">
-											<div class="kt-section__body">
-
-												<div class="row align-items-center">
-													<div class="form-group validated col-sm-6 col-lg-6">
-														<label class="col-form-label" id="lbl_cpf_cnpj">Serviço</label>
-														<div class="">
-															<select class="form-control select2 servico" id="kt_select2_1" name="servico">
-																@foreach($servicos as $s)
-																<option value="{{$s->id}}">{{$s->id}} - {{$s->nome}}</option>
-																@endforeach
-															</select>
-														</div>
-													</div>
-
-													<div class="form-group validated col-sm-4 col-lg-3">
-														<label class="col-form-label" id="">Quantidade</label>
-														<div class="">
-															<input type="text" id="quantidade" name="quantidade" class="form-control @if($errors->has('quantidade')) is-invalid @endif" value="">
-															@if($errors->has('quantidade'))
-															<div class="invalid-feedback">
-																{{ $errors->first('quantidade') }}
-															</div>
-															@endif
-														</div>
-													</div>
-
-													<div class="col-sm-3 col-lg-2">
-														<button style="margin-top: 10px;" type="submit" class="btn btn-success">Adicionar</button>
-													</div>
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-
-								<div class="col-xl-12">
-									<div class="row">
-										<div class="col-xl-12">
-											<div class="container">
-												<label>Registros: <strong class="text-success">{{sizeof($ordem->servicos)}}</strong></label>
-												<div id="kt_datatable" class="datatable datatable-bordered datatable-head-custom datatable-default datatable-primary datatable-loaded">
-
-													<table class="datatable-table" style="max-width: 100%; overflow: scroll">
-														<thead class="datatable-head">
-															<tr class="datatable-row" style="left: 0px;">
-																<th data-field="OrderID" class="datatable-cell datatable-cell-sort"><span style="width: 300px;">Serviço</span></th>
-																<th data-field="OrderID" class="datatable-cell datatable-cell-sort"><span style="width: 200px;">Quantidade</span></th>
-																<th data-field="Country" class="datatable-cell datatable-cell-sort"><span style="width: 200px;">Status</span></th>
-																<th data-field="ShipDate" class="datatable-cell datatable-cell-sort"><span style="width: 200px;">Total</span></th>
-
-																<th data-field="CompanyName" class="datatable-cell datatable-cell-sort"><span style="width: 120px;">Ações</span></th>
-															</tr>
-														</thead>
-
-														<tbody class="datatable-body">
-
-															<?php $servico_total = 0; ?>
-															@foreach($ordem->servicos as $s)
-															<tr class="datatable-row" style="left: 0px;">
-
-																<td class="datatable-cell"><span class="codigo" style="width: 300px;">{{$s->servico->nome}}</span></td>
-																<td class="datatable-cell"><span class="codigo" style="width: 200px;">{{$s->quantidade}}</span></td>
-																<td class="datatable-cell"><span class="codigo" style="width: 200px;">
-																	@if($s->status == true)
-																	<span class="label label-xl label-inline label-light-success">FINALIZADO
-																	</span>
-																	@else
-																	<span class="label label-xl label-inline label-light-warning">PENDENTE
-																	</span>
-																	@endif
-																</span></td>
-																<?php 
-																$servico_total += $s->servico->valor * $s->quantidade;
-																?>
-
-																<td class="datatable-cell"><span class="codigo" style="width: 200px;">{{number_format(($servico_total), 2, ',', '.')}}</span></td>
-
-																<td class="datatable-cell"><span class="codigo" style="width: 120px;">
-																	@if(!$s->status)
-
-																	<a onclick='swal("Atenção!", "Deseja remover este registro?", "warning").then((sim) => {if(sim){ location.href="/ordemServico/deleteServico/{{ $s->id }}" }else{return false} })' href="#!" class="btn btn-danger">
-																		<span class="la la-trash"></span>
-																	</a>
-
-																	<a class="btn btn-success" href="/ordemServico/alterarStatusServico/{{ $s->id }}">
-																		<span class="la la-check"></span>
-																	</a>
-																	@endif
-
-
-																</span></td>
-
-															</tr>
-															@endforeach
-
-														</tbody>
-													</table>
-												</div>
-											</div>
-
-										</div>
-									</div>
-								</div>
-
-							</form>
-
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
 	</div>
 
 	<hr>
@@ -349,6 +241,260 @@ $(document).ready(function() {
 		</div>
 	</div>
 
+
+<!-- #############################################################################################################-->
+<!-- #############################################################################################################-->
+<!-- ###################################Lista de produtos ########################################################-->
+<!-- #############################################################################################################-->
+<!-- #############################################################################################################--> 
+
+<div class="row">
+    <div class="form-group validated col-sm-12 col-lg-12">
+        <h4 style="padding-left: 20px">Produtos da OS</h4>
+    </div>
+    <div class="form-group validated col-sm-12 col-lg-12">
+        <div class="kt-section kt-section--first">
+            <div class="kt-section__body">
+                <table class="datatable-table" style="max-width: 100%; overflow: scroll">
+                    <thead class="datatable-head">
+                        <tr class="datatable-row" style="left: 0px;">
+                            <th>Produtos</th>
+							<th>Estoque</th>
+                            <th>Unit.</th>
+                            <th>V. Unit.</th>
+                            <th>V. Total</th>
+                        </tr>
+                    </thead>
+                    <tbody class="datatable-body">
+                        <tr class="datatable-row">
+							
+                            
+                                <div class="d-flex justify-content-start align-items-center">
+									<form class="formulario" action="{{ route('save.product') }}" method="POST">
+										@csrf
+										<input type="hidden" name="ordem_servico_id" value="{{$ordem->id}}">
+										<div class="d-flex">
+											<td>
+												<select class="box-produtoslist" id="kt-select2_1" name="produtos_selecionados[]" tabindex="-1" aria-hidden="true" onchange="updateValue(this)">
+													@foreach ($produtos as $produto)
+														<option value="{{ $produto->id }}" data-valor="{{ $produto->valor_venda }}" data-estoque="{{ $produto->estoque->quantidade }}">{{ $produto->nome }}</option>
+													@endforeach
+												</select>
+											</td>
+											<td>
+												<input class="form-control-estoque ml-2" type="text" id="estoque" value="{{ $produtos->first()->estoque->quantidade }}" readonly>
+											</td>
+											<td>
+												<input class="form-control-quantidade ml-2" type="number" id="quantidade" name="unidades[]" value="1" min="1" onchange="calculateTotal(this)">
+											</td>
+											<td>
+												<input class="form-control-valor ml-2" type="text" id="valor" name="valor" value="{{ $produtos->first()->valor_venda }}" readonly>
+											</td>
+											<td>
+												<input class="form-control-valor ml-2" type="text" id="valor_total" name="valor_total" value="{{ $produtos->first()->valor_venda }}" readonly>
+											</td>
+											<td>
+												<button type="submit" class="btn btn-success">Adicionar</button>
+											</td>
+										</div>
+									</form>
+									
+                                </div>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="container">
+    <div id="kt_datatable" class="datatable datatable-bordered datatable-head-custom datatable-default datatable-primary datatable-loaded">
+        <table class="datatable-table" style="max-width: 100%; overflow: scroll; padding:30px;">
+            <thead class="datatable-head">
+                <tr class="datatable-row" style="left: 0px;">
+                    <th data-field="OrderID" class="datatable-cell datatable-cell-sort" style="width: 300px;"><span>Produto:</span></th>
+                    <th data-field="OrderID" class="datatable-cell datatable-cell-sort" style="width: 200px;"><span>Unit.</span></th>
+                    <th data-field="OrderID" class="datatable-cell datatable-cell-sort" style="width: 200px;"><span>V. Unit.:</span></th>
+                    <th data-field="OrderID" class="datatable-cell datatable-cell-sort" style="width: 200px;"><span>V. Total:</span></th>
+                </tr>
+            </thead>
+            <tbody class="datatable-body">
+                @if(isset($produtosSalvos) && $produtosSalvos->isNotEmpty())
+                    @php
+                        $produto_total = isset($produto_total) ? $produto_total : 0;
+                    @endphp
+                    @foreach($produtosSalvos as $produto)
+							@if($produto->ordem_servico_id != $ordem->id)
+								@continue
+							@endif
+							<input type="hidden" name="ordem_servico_id" value="{{$ordem->id}}">
+
+                            @php
+                                $subtotal = $produto->valor * $produto->produto_id;
+                                $valorTotal = $produto->valor * $produto->unidades;
+                                $produto_total += $valorTotal;
+                            @endphp
+                            <tr class="datatable-row">
+								
+								
+                                <td class="datatable-cell"><span class="codigo" style="width: 350px;">{{ $produto->nome }}</span></td>
+                                <td class="datatable-cell"><span class="codigo" style="width: 230px;">{{ $produto->unidades }}</span></td>
+                                <td class="datatable-cell"><span class="codigo" style="width: 200px;">{{ number_format($produto->valor, 2, ',', '.') }}</span></td>
+                                <td class="datatable-cell"><span class="codigo" style="width: 200px;">{{ number_format($valorTotal, 2, ',', '.') }}</span></td>
+                                <td class="datatable-cell">
+                                    <span class="codigo" style="width: 200px;">
+                                        <form action="{{ route('remove.product') }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="produto_id" value="{{ $produto->id }}">
+                                            <button type="submit" class="btn btn-danger">Remover</button>
+                                        </form>
+                                    </span>
+                                </td>
+                            </tr>
+                        
+                    @endforeach
+                @else
+                    	<tr class="datatable-row">
+                        	<td colspan="4">Nenhum produto salvo</td>
+                    	</tr>
+                @endif
+                <tr>
+                    <th style="font-weight: bold;">Total</th>
+                    <th style="font-weight: bold;">=</th>
+                    @php
+                        $produto_total = isset($produto_total) ? $produto_total : 0;
+                    @endphp
+                    <td style="font-weight: bold;">R$ {{ number_format($produto_total, 2, ',', '.') }}</td>
+                    <td></td> <!-- Coluna vazia-->
+
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<!-- #############################################################################################################-->
+<!-- #############################################################################################################-->
+<!-- #########################          SERVIÇOS          ########################################################-->
+<!-- #############################################################################################################-->
+<!-- #############################################################################################################-->
+
+
+<form method="post" action="/ordemServico/addServico">
+	@csrf
+	<div class="row">
+		<input type="hidden" id="_token" value="{{ csrf_token() }}">
+		<input type="hidden" name="ordem_servico_id"  value="{{$ordem->id}}">
+		<div class="form-group validated col-sm-12 col-lg-12">
+			<h4 style="padding: 20px 0px 0px 20px;">Serviços da OS</h4>
+		</div>
+	<!-- #########################          SELEÇÃO DE SERVIÇOS          ########################################################-->
+		<div class="form-group validated col-sm-12 col-lg-12">
+			<div class="kt-section kt-section--first">
+				<div class="kt-section__body">
+					<table class="datatable-table" style="max-width: 100%; overflow: scroll">
+						<thead class="datatable-head">
+							<tr class="datatable-row" style="left: 0px;">
+								<th>Serviço</th>
+								<th>Qntd</th>
+								<th>V. Unit.</th>
+							</tr>
+						</thead>
+						<tbody class="datatable-body">
+							<tr class="datatable-row">
+								<td>
+									<form class="formulario" action="{{ route('save.product') }}" method="POST">
+										@csrf
+										<div class="d-flex">
+											<select class="form-control select2 servico" id="kt_select2_1" name="servico">
+												@foreach($servicos as $s)
+												<option value="{{$s->id}}">{{$s->id}} - {{$s->nome}}</option>
+												@endforeach
+											</select>
+										</div>
+								</td>
+								<td>
+									<div class="">
+										<input type="text" id="quantidade" name="quantidade" class="form-control-quantidade ml-2 @if($errors->has('quantidade')) is-invalid @endif" value="">
+										@if($errors->has('quantidade'))
+										<div class="invalid-feedback">
+											{{ $errors->first('quantidade') }}
+										</div>
+										@endif
+									</div>
+									
+								</td>
+								<td>
+									@if ($servicos->isNotEmpty())
+										<input class="form-control-valor ml-2" type="text" id="valor" name="valor" value="{{ $servicos->first()->valor }}" readonly>
+									@else
+										<!-- Tratar o caso em que a coleção está vazia -->
+									@endif
+								</td>
+								<td>
+									<div class="col-sm-3 col-lg-2">
+										<button style="margin-top: 10px;" type="submit" class="btn btn-success">Adicionar</button>
+									</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- #########################          SERVIÇOS SALVOS         ########################################################-->
+	<div class="container">
+		<div id="kt_datatable" class="datatable datatable-bordered datatable-head-custom datatable-default datatable-primary datatable-loaded">
+			<table class="datatable-table" style="max-width: 100%; overflow: scroll; padding:30px;">
+				<thead class="datatable-head">
+					<tr class="datatable-row" style="left: 0px;">
+						<th data-field="OrderID" class="datatable-cell datatable-cell-sort" style="width: 100px;"><span>Serviço:</span></th>
+						<th data-field="OrderID" class="datatable-cell datatable-cell-sort" style="width: 50px;"><span>Qntd.</span></th>
+						<th data-field="OrderID" class="datatable-cell datatable-cell-sort" style="width: 200px;"><span>V. Unit.:</span></th>
+					</tr>
+				</thead>
+				<tbody class="datatable-body">
+					<?php $servico_total = 0; ?>
+					@foreach($ordem->servicos as $s)
+						<tr class="datatable-row" style="left: 0px;">
+							<td class="datatable-cell" style="width: 300px;"><span class="codigo">{{$s->servico->nome}}</span></td>
+							<td class="datatable-cell" style="width: 200px;"><span class="codigo">{{$s->quantidade}}</span></td>
+							<td class="datatable-cell" style="width: 200px;"><span class="codigo">{{ $servicos->first()->valor }}</span></td>
+							<td class="datatable-cell"><span class="codigo">
+								<a onclick='swal("Atenção!", "Deseja remover este registro?", "warning").then((sim) => {if(sim){ location.href="/ordemServico/deleteServico/{{ $s->id }}" }else{return false} })' href="#!" class="btn btn-danger">
+									<span class="la la-trash"></span>
+								</a>
+							</span></td>
+						</tr>
+					@endforeach
+						<tr>
+							<th style="font-weight: bold;">Total</th>
+							<th style="font-weight: bold;">=</th>
+							<td style="font-weight: bold;">
+								@php
+									$servico_total = 0;
+									foreach ($ordem->servicos as $s) {
+										if ($s->servico) {
+											$servico_total += $s->servico->valor * $s->quantidade;
+										}
+									}
+								@endphp
+								R$ {{ number_format($servico_total, 2, ',', '.') }}
+							</td>
+							<td></td> <!-- Coluna vazia para manter a formatação da tabela -->
+						</tr>
+						
+				</tbody>
+			</table>
+		</div>
+</form>
+</div>
+
+
+<!-- #########################         FIM SERVIÇOS          ########################################################-->
 	<hr>
 	<div class="row" id="content" style="display: block">
 		<div class="content d-flex flex-column flex-column-fluid" id="kt_content">
@@ -380,45 +526,54 @@ $(document).ready(function() {
 							</div>
 							<!-- 1 - FORMULARIOS COM DADOS DOS EQUIPAMENTOS -->
 							<div class="row" style="width: 100%;">
-								@foreach($ordem->relatorios as $r)
-								@endforeach
-								<div class="col-md-6" >
-									<label for="text1">Observações:</label>
-									<span type="text" style="height: 200px" name="text2" id="text2" class="form-control form-control-lg">{{$r->texto}}</span>
-								</div>
-								<div class="col-md-6">
-									<label for="text2">Equipamento:</label>
-									<span type="text" style="height: 200px" name="text2" id="text2" class="form-control form-control-lg">{{$r->equipamento}}</span>
-								</div>
+								@if($ordem->relatorios->isEmpty())
+									<p>Não há relatórios disponíveis.</p>
+								@else
+									@foreach($ordem->relatorios as $r)
+										<div class="col-md-6">
+											<label for="text1">Observações:</label>
+											<span type="text" style="height: 200px" name="text2" id="text2" class="form-control form-control-lg">{{$r->texto}}</span>
+										</div>
+										<div class="col-md-6">
+											<label for="text2">Equipamento:</label>
+											<span type="text" style="height: 200px" name="text2" id="text2" class="form-control form-control-lg">{{$r->equipamento}}</span>
+										</div>
+									@endforeach
+								@endif
 							</div>
+							
 							<!-- 1 - FIM DOS FORMULARIOS COM DADOS DOS EQUIPAMENTOS -->
 							<!-- 2 - FORMULARIOS COM DADOS DOS EQUIPAMENTOS -->
 							<div class="row" style="width: 100%;">
-								@foreach($ordem->relatorios as $r)
-								@endforeach
-								<div class="col-md-6" >
-									<label for="text1">Problema:</label>
-									<span type="text" style="height: 200px" name="text2" id="text2" class="form-control form-control-lg">{{$r->problema}}</span>
-								</div>
-								<div class="col-md-6">
-									<label for="text2">Observações de recebimento:</label>
-									<span type="text" style="height: 200px" name="text2" id="text2" class="form-control form-control-lg">{{$r->recebimento}}</span>
-								</div>
+								@if(!empty($ordem->relatorios))
+									@foreach($ordem->relatorios as $r)
+										<div class="col-md-6">
+											<label for="text1">Problema:</label>
+											<span type="text" style="height: 200px" name="text2" id="text2" class="form-control form-control-lg">{{$r->problema}}</span>
+										</div>
+										<div class="col-md-6">
+											<label for="text2">Observações de recebimento:</label>
+											<span type="text" style="height: 200px" name="text2" id="text2" class="form-control form-control-lg">{{$r->recebimento}}</span>
+										</div>
+									@endforeach
+								@endif
 							</div>
+							
 							<!-- 2 - FIM DOS FORMULARIOS COM DADOS DOS EQUIPAMENTOS -->
 							<!-- 3 - FORMULARIOS COM DADOS DOS EQUIPAMENTOS -->
 							<div class="row" style="width: 100%;">
 								@foreach($ordem->relatorios as $r)
+									<div class="col-md-6">
+										<label for="text1">Laudo Técnico:</label>
+										<span type="text" style="height: 200px" name="text2" id="text2" class="form-control form-control-lg">{{$r->laudo}}</span>
+									</div>
+									<div class="col-md-6">
+										<label for="text1">RMA:</label>
+										<span type="text" style="height: 200px" name="text2" id="text2" class="form-control form-control-lg">{{$r->rma}}</span>
+									</div>
 								@endforeach
-								<div class="col-md-6" >
-									<label for="text1">Laudo Técnico:</label>
-									<span type="text" style="height: 200px" name="text2" id="text2" class="form-control form-control-lg">{{$r->laudo}}</span>
-								</div>
-								<div class="col-md-6" >
-									<label for="text1">RMA:</label>
-									<span type="text" style="height: 200px" name="text2" id="text2" class="form-control form-control-lg">{{$r->rma}}</span>
-								</div>
 							</div>
+							
 							<!-- 3 - FIM DOS FORMULARIOS COM DADOS DOS EQUIPAMENTOS -->
 
 							<div class="col-xl-12">
@@ -472,291 +627,4 @@ $(document).ready(function() {
 		</div>
 	</div>
 </div>
-
-
-
-
-
-
-
-<!-- #############################################################################################################-->
-<!-- #############################################################################################################-->
-<!-- ###################################Lista de produtos ########################################################-->
-<!-- #############################################################################################################-->
-<!-- #############################################################################################################-->
-<hr>
-<div class="row">
-    <div class="form-group validated col-sm-12 col-lg-12">
-        <h4 style="padding-left: 20px">Produtos da OS</h4>
-    </div>
-
-    <div class="form-group validated col-sm-12 col-lg-12">
-        <div class="kt-section kt-section--first">
-            <div class="kt-section__body">
-                <table class="datatable-table" style="max-width: 100%; overflow: scroll">
-                    <thead class="datatable-head">
-                        <tr class="datatable-row" style="left: 0px;">
-                            <th>Produtos</th>
-							<th>Estoque</th>
-                            <th>Unit.</th>
-                            <th>V. Unit.</th>
-                            <th>V. Total</th>
-                        </tr>
-                    </thead>
-                    <tbody class="datatable-body">
-                        <tr class="datatable-row">
-							
-                            
-                                <div class="d-flex justify-content-start align-items-center">
-									<form class="formulario" action="{{ route('save.product') }}" method="POST">
-										@csrf
-										<div class="d-flex">
-											<td>
-												<select class="box-produtoslist" id="kt-select2_1" name="produtos_selecionados[]" tabindex="-1" aria-hidden="true" onchange="updateValue(this)">
-													@foreach ($produtos as $produto)
-														<option value="{{ $produto->id }}" data-valor="{{ $produto->valor_venda }}" data-estoque="{{ $produto->estoque->quantidade }}">{{ $produto->nome }}</option>
-													@endforeach
-												</select>
-											</td>
-											<td>
-												<input class="form-control-estoque ml-2" type="text" id="estoque" value="{{ $produtos->first()->estoque->quantidade }}" readonly>
-											</td>
-											<td>
-												<input class="form-control-quantidade ml-2" type="number" id="quantidade" name="unidades[]" value="1" min="1" onchange="calculateTotal(this)">
-											</td>
-											<td>
-												<input class="form-control-valor ml-2" type="text" id="valor" name="valor" value="{{ $produtos->first()->valor_venda }}" readonly>
-											</td>
-											<td>
-												<input class="form-control-valor ml-2" type="text" id="valor_total" name="valor_total" value="{{ $produtos->first()->valor_venda }}" readonly>
-											</td>
-											<td>
-												<button type="submit" class="btn btn-success">Adicionar</button>
-											</td>
-										</div>
-									</form>
-									
-                                </div>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-<div class="container">
-	<div id="kt_datatable" class="datatable datatable-bordered datatable-head-custom datatable-default datatable-primary datatable-loaded">
-		<table class="datatable-table" style="max-width: 100%; overflow: scroll; padding:30px;" >
-			<thead class="datatable-head">
-				<tr class="datatable-row" style="left: 0px;">
-					<th data-field="OrderID" class="datatable-cell datatable-cell-sort" style="width: 300px;">Produto:</th>
-					<th data-field="OrderID" class="datatable-cell datatable-cell-sort" style="width: 200px;">Unit.</th>
-					<th data-field="OrderID" class="datatable-cell datatable-cell-sort" style="width: 200px;">V. Unit.:</th>
-					<th data-field="OrderID" class="datatable-cell datatable-cell-sort" style="width: 200px;">V. Total:</th>
-		
-				</tr>
-			</thead>
-			<tbody class="datatable-body">
-				@if(isset($produtosSalvos) && $produtosSalvos->isNotEmpty())
-					@php
-						$produto_total = isset($produto_total) ? $produto_total : 0;
-					@endphp
-			
-					@foreach($produtosSalvos as $produto)
-						@php
-							$subtotal = $produto->valor * $produto->produto_id;
-							$valorTotal = $produto->valor * $produto->unidades;
-							$produto_total += $valorTotal;
-						@endphp
-						<tr class="datatable-row">
-							<td class="datatable-cell"><span class="codigo" style="width: 350px;">{{ $produto->nome }}</span></td>
-							<td class="datatable-cell"><span class="codigo" style="width: 230px;">{{ $produto->unidades }}</span></td>
-							<td class="datatable-cell"><span class="codigo" style="width: 200px;">{{ number_format($produto->valor, 2, ',', '.') }}</span></td>
-							<td class="datatable-cell"><span class="codigo" style="width: 200px;">{{ number_format($valorTotal, 2, ',', '.') }}</span></td>
-							<td class="datatable-cell"><span class="codigo" style="width: 200px;"></span></td>
-							<td class="datatable-cell"><span class="codigo" style="width: 200px;">
-								<form action="{{ route('remove.product') }}" method="POST">
-									@csrf
-									<input type="hidden" name="produto_id" value="{{ $produto->id }}">
-									<button type="submit" class="btn btn-danger">Remover</button>
-								</form>
-							</span></td>
-							</tr>
-					@endforeach
-				@else
-					<tr class="datatable-row">
-						<td colspan="4">Nenhum produto salvo</td>
-					</tr>
-				@endif
-				<tr>
-					<hr><th style="font-weight: bold;">Total</th>
-					<hr><th style="font-weight: bold;">=</th>
-					@php
-						   $produto_total = isset($produto_total) ? $produto_total : 0;
-					@endphp
-	
-					<td style="font-weight: bold;">R$ {{ number_format($produto_total, 2, ',', '.') }}</td>
-					<td></td> <!-- Coluna vazia para manter a formatação da tabela -->
-				</tr>
-			</tbody>
-		</table>
-
-	</div>
-
-</div>
-
-<!-- #############################################################################################################-->
-<!-- #############################################################################################################-->
-<!-- #########################          SERVIÇOS          ########################################################-->
-<!-- #############################################################################################################-->
-<!-- #############################################################################################################-->
-
-<!-- #############################################################################################################-->
-<!-- #############################################################################################################-->
-<!-- #########################          SERVIÇOS          ########################################################-->
-<!-- #############################################################################################################-->
-<!-- #############################################################################################################-->
-
-<!-- #############################################################################################################-->
-<!-- #############################################################################################################-->
-<!-- #########################          SERVIÇOS          ########################################################-->
-<!-- #############################################################################################################-->
-<!-- #############################################################################################################-->
-<hr>
-<div class="row">
-    <div class="form-group validated col-sm-12 col-lg-12">
-        <h4 style="padding-left: 20px">Serviços da OS</h4>
-    </div>
-
-    <div class="form-group validated col-sm-12 col-lg-12">
-        <div class="kt-section kt-section--first">
-            <div class="kt-section__body">
-                <table class="datatable-table" style="max-width: 100%; overflow: scroll">
-                    <thead class="datatable-head">
-                        <tr class="datatable-row" style="left: 0px;">
-                            <th>Serviço</th>
-                            <th>Qntd</th>
-                            <th>V. Unit.</th>
-                            <th>V. Total</th>
-                        </tr>
-                    </thead>
-                    <tbody class="datatable-body">
-                        <tr class="datatable-row">
-                            <td>
-                                <form class="formulario" action="{{ route('save.product') }}" method="POST">
-                                    @csrf
-                                    <div class="d-flex">
-										<select class="form-control select2 servico" id="kt_select2_1" name="servico">
-											@foreach ($servicos as $s)
-												<option value="{{$s->id}}" data-valor="{{$s->valor}}">{{$s->id}} - {{$s->nome}}</option>
-											@endforeach
-										</select>
-                                    </div>
-                            </td>
-                            <td>
-								<input type="text" id="quantidade" name="quantidade" class="form-control quantidade @if($errors->has('quantidade')) is-invalid @endif" value="">
-								@if($errors->has('quantidade'))
-									<div class="invalid-feedback">
-										{{ $errors->first('quantidade') }}
-									</div>
-								@endif
-                            </td>
-							<td>
-								@if ($servicos->isNotEmpty())
-									<input class="form-control-valor ml-2" type="text" id="valor" name="valor" value="{{ $servicos->first()->valor }}" readonly>
-								@else
-									<!-- Tratar o caso em que a coleção está vazia -->
-								@endif
-							</td>
-							
-                            <td>
-                                <input class="form-control-valor ml-2" type="text" id="valor_total" name="valor_total" value="" readonly>
-                            </td>
-                            <td>
-                                <button style="margin-top: 10px;" type="submit" class="btn btn-success">Adicionar</button>
-                            </td>
-                            </form>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="container">
-    <div id="kt_datatable" class="datatable datatable-bordered datatable-head-custom datatable-default datatable-primary datatable-loaded">
-        <table class="datatable-table" style="max-width: 100%; overflow: scroll; padding:30px;">
-            <thead class="datatable-head">
-                <tr class="datatable-row" style="left: 0px;">
-                    <th data-field="OrderID" class="datatable-cell datatable-cell-sort" style="width: 200px;">Serviço:</th>
-                    <th data-field="OrderID" class="datatable-cell datatable-cell-sort" style="width: 10px;">Qntd.</th>
-                    <th data-field="OrderID" class="datatable-cell datatable-cell-sort" style="width: 10x;">V. Unit.:</th>
-                    <th data-field="OrderID" class="datatable-cell datatable-cell-sort" style="width: 10px;">V. Total:</th>
-                </tr>
-			</thead>
-			<tbody class="datatable-body">
-				<?php $servico_total = 0; ?>
-				@foreach($ordem->servicos as $s)
-						<tr class="datatable-row">
-							<td class="datatable-cell"><span class="codigo" style="width: 200px;">{{$s->servico->nome}}</span></td>
-							<td class="datatable-cell"><span class="codigo" style="width: 10px;">{{$s->quantidade}}</span></td>
-							<td class="datatable-cell"><span class="codigo" style="width: 10px;">{{number_format(($servico_total), 2, ',', '.')}}</span></td>
-							<td class="datatable-cell"><span class="codigo" style="width: 10px;"></span></td>
-							<td class="datatable-cell"><span class="codigo" style="width: 10px;"></span></td>
-							<td class="datatable-cell"><span class="codigo" style="width: 10px;">
-								<a onclick='swal("Atenção!", "Deseja remover este registro?", "warning").then((sim) => {if(sim){ location.href="/ordemServico/deleteServico/{{ $s->id }}" }else{return false} })' href="#!" class="btn btn-danger">
-									<span class="la la-trash"></span>
-								</a>
-							</span></td>
-						</tr>
-					@endforeach
-					<tr>
-						<th style="font-weight: bold;">Total</th>
-						<th style="font-weight: bold;">=</th>
-						<td style="font-weight: bold;">
-							@php
-								$servico_total = 0;
-								foreach ($ordem->servicos as $s) {
-									if ($s->servico) {
-										$servico_total += $s->servico->valor * $s->quantidade;
-									}
-								}
-							@endphp
-							R$ {{ number_format($servico_total, 2, ',', '.') }}
-						</td>
-						<td></td> <!-- Coluna vazia para manter a formatação da tabela -->
-					</tr>
-					
-			</tbody>
-		</table>
-
-	</div>
-
-</div>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    $(document).ready(function() {
-        $('#kt_select2_1').change(function() {
-            var selectedOption = $('#kt_select2_1').find(':selected');
-            var valorUnitario = selectedOption.data('valor');
-            var quantidade = $('#quantidade').val();
-            var valorTotal = parseFloat(valorUnitario) * parseInt(quantidade);
-
-            $('#valor').val(valorUnitario);
-            $('#valor_total').val(valorTotal.toFixed(2));
-        });
-
-        $('#quantidade').keyup(function() {
-            var selectedOption = $('.servico-option:selected');
-            var valorUnitario = selectedOption.data('valor');
-            var quantidade = $(this).val();
-            var valorTotal = parseFloat(valorUnitario) * parseInt(quantidade);
-
-            $('#valor_total').val(valorTotal.toFixed(2));
-        });
-    });
-</script>
 @endsection

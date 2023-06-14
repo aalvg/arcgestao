@@ -66,7 +66,7 @@ class OrderController extends Controller
     }
 
     public function save(Request $request){
-        $this->_validate($request);
+       
 
         $order = new OrdemServico;
         $request->merge([ 'valor' =>str_replace(",", ".", $request->input('valor'))]);
@@ -76,7 +76,7 @@ class OrderController extends Controller
         $cliente = $cliente[0];
 
         $result = $order->create([
-            'descricao' => $request->input('descricao'),
+            
             'equipamento' => $request->input('equipamento'),
             'problema' => $request->input('problema'),
             'recebimento' => $request->input('recebimento'),
@@ -173,9 +173,12 @@ class OrderController extends Controller
         return $produtos;
     }
     
-
     public function salvarProduto(Request $request)
     {
+        $this->validate($request, [
+            'ordem_servico_id' => 'required|exists:ordem_servicos,id',
+        ]);
+    
         $selectedProductIds = $request->input('produtos_selecionados');
         $unidades = $request->input('unidades');
     
@@ -187,19 +190,29 @@ class OrderController extends Controller
         // Salve os produtos selecionados na tabela produto_servs
         foreach ($selectedProductIds as $index => $productId) {
             $produtoServ = new ProdutoServ();
+            $produtoServ->ordem_servico_id = $request->input('ordem_servico_id');
             $produtoServ->produto_id = $productId;
             $produtoServ->unidades = $unidades[$index];
     
             $produto = Produto::find($productId);
             $produtoServ->nome = $produto->nome;
             $produtoServ->valor = $produto->valor_venda;
-            $produtoServ->save();
+            $result = $produtoServ->save();
+        }
+    
+        if ($result) {
+            // O produto foi salvo com sucesso
+            session()->flash('mensagem_sucesso', 'Produto adicionado!');
+        } else {
+            // Ocorreu um erro ao salvar o produto
+            session()->flash('mensagem_erro', 'Erro ao adicionar o produto!');
         }
     
         // Limpe a lista de produtos selecionados na sessão
         session()->forget('selected_products');
     
-        return redirect()->back()->with('success', 'Produtos salvos com sucesso!');
+        return redirect()->back()->with('success', 'Produto adicionado com sucesso!');
+
     }
     
     
@@ -219,9 +232,16 @@ public function obterEstoque($produtoId)
     }
 }
 
-    public function getProdutosSalvos()
-    {
-    $produtosSalvos = ProdutoServ::all();
+public function showServicos($ordemServicoId)
+{
+    // Restante do seu código...
+
+    return $this->getProdutosSalvos($ordemServicoId);
+}
+
+public function getProdutosSalvos($ordemServicoId)
+{
+    $produtosSalvos = ProdutoServ::where('ordem_servico_id', $ordemServicoId)->get();
     $produto_total = 0;
 
     if ($produtosSalvos->isEmpty()) {
@@ -236,10 +256,11 @@ public function obterEstoque($produtoId)
     }
     session()->put('produto_total', $produto_total);
     session()->put('servico_total', 0); // Defina o valor inicial para o serviço como 0 ou calcule-o aqui se necessário
-    
-    return view('os.servicos', compact('produtosSalvos', 'produto_total'));
-    
-    }
+
+    return view('os.servicos', compact('produtosSalvos', 'produto_total', 'ordemServicoId'));
+
+}
+
 
 
     public function removeProduct(Request $request)
@@ -408,7 +429,7 @@ public function obterEstoque($produtoId)
     }
 
     public function saveRelatorio(Request $request){
-        $this->_validateRelatorio($request);
+        
 
         $relatorioOs = new RelatorioOs();
 
@@ -473,19 +494,7 @@ public function obterEstoque($produtoId)
         return redirect("/ordemServico/servicosordem/$id");
     }
 
-    private function _validate(Request $request){
-        $rules = [
-            'cliente' => 'required',
-            'descricao' => 'required',
-        ];
 
-        $messages = [
-            'cliente.required' => 'O campo cliente é obrigatório.',
-            'descricao.required' => 'O campo descrição é obrigatório.',
-        ];
-
-        $this->validate($request, $rules, $messages);
-    }
 
     private function _validateServicoOs(Request $request){
         $rules = [
@@ -515,24 +524,7 @@ public function obterEstoque($produtoId)
         $this->validate($request, $rules, $messages);
     }
 
-    private function _validateRelatorio(Request $request){
-        $rules = [
-            'equipamento' => 'required|min:15',
-            'problema' => 'required|min:15',
-            'recebimento' => 'required|min:15',
-        ];
-
-        $messages = [
-            'equipamento.required' => 'O campo equipamento é obrigatório.',
-            'equipamento.min' => 'Minimo de 15 caracteres.',
-            'problema.required' => 'O campo problema é obrigatório.',
-            'problema.min' => 'Minimo de 15 caracteres.',
-            'recebimento.required' => 'O campo recebimento é obrigatório.',
-            'recebimento.min' => 'Minimo de 15 caracteres.',
-        ];
-
-        $this->validate($request, $rules, $messages);
-    }
+ 
 
     public function cashFlow(){
 
@@ -619,14 +611,15 @@ public function obterEstoque($produtoId)
     public function imprimir($id){
         $ordem = OrdemServico::find($id);
         $config = ConfigNota::first();
-
+        $produtosSalvos = ProdutoServ::all();
         if($config == null){
             return redirect('/configNF');
         }
-
+        
         return view('os/print')
         ->with('ordem', $ordem)
         ->with('config', $config)
+        ->with('produtosSalvos', $produtosSalvos)
         ->with('title', 'Imprimindo OS');
     }
 
@@ -687,17 +680,7 @@ public function obterEstoque($produtoId)
         return redirect("/ordemServico/servicosordem/$id");
     }
 
-    public function alterarStatusServico($servicoId){
-        $servicoOs = ServicoOs::
-        where('id', $servicoId)
-        ->first();
 
-        $servicoOs->status = !$servicoOs->status;
-        $servicoOs->save();
-
-        session()->flash('mensagem_sucesso', 'Status de serviço alterado!');
-        return redirect("/ordemServico/servicosordem/".$servicoOs->servico->id);
-    }
 
     public function setaDesconto(Request $request){
         $id = $request->id;
