@@ -15,8 +15,12 @@ use App\Models\ConfigNota;
 use App\Models\Produto;
 use App\Models\Mensagem;
 use App\Models\ProdutoServ;
+use App\Models\ImagemOs;
+use Intervention\Image\Facades\Image;
+
 
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 use App\Helpers\StockMove;
 use \Carbon\Carbon;
@@ -107,6 +111,8 @@ class OrderController extends Controller
 
         $servicos = Servico::all();
         $produtosSalvos = ProdutoServ::all();
+        $imagens = ImagemOs::where('ordem_servico_id', $ordem)->get();
+        $imagensSalvas = ImagemOs::all();
         $funcionarios = Funcionario::all();
         $produtos = Produto::all();
         $temServicos = count(Servico::all()) > 0;
@@ -120,6 +126,8 @@ class OrderController extends Controller
         ->with('relatorioJs', true)
         ->with('funcionario', true)
         ->with('servicos', $servicos)
+        ->with('imagens', $imagens)
+        ->with('imagensSalvas', $imagensSalvas)
         ->with('funcionarios', $funcionarios)
         ->with('temServicos', $temServicos)
         ->with('temFuncionarios', $temFuncionarios)
@@ -608,20 +616,35 @@ public function getProdutosSalvos($ordemServicoId)
         ->with('title', 'Orders de Serviço');
     }
 
-    public function imprimir($id){
+    public function imprimir($id)
+    {
         $ordem = OrdemServico::find($id);
         $config = ConfigNota::first();
         $produtosSalvos = ProdutoServ::all();
-        if($config == null){
+        $imagensSalvas = ImagemOs::all();
+    
+        if ($config == null) {
             return redirect('/configNF');
         }
-        
-        return view('os/print')
-        ->with('ordem', $ordem)
-        ->with('config', $config)
-        ->with('produtosSalvos', $produtosSalvos)
-        ->with('title', 'Imprimindo OS');
+    
+        $content = view('os.print')
+            ->with('ordem', $ordem)
+            ->with('config', $config)
+            ->with('produtosSalvos', $produtosSalvos)
+            ->with('imagensSalvas', $imagensSalvas)
+            ->with('title', 'Imprimindo OS')
+            ->render();
+    
+        return response($content)
+            ->header('Content-Type', 'text/html')
+            ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+            ->header('Pragma', 'no-cache')
+            ->header('X-Content-Type-Options', 'nosniff')
+            ->header('X-XSS-Protection', '1; mode=block')
+            ->header('Content-Disposition', 'inline; filename="imprimir_os.html"')
+            ->header('X-Powered-By', 'ChatGPT');
     }
+    
 
 
 // funcinarios
@@ -692,6 +715,37 @@ public function getProdutosSalvos($ordemServicoId)
         session()->flash('mensagem_sucesso', 'Desconto adicionado!');
         return redirect()->back();
     }
+
+
+    public function uploadImagem(Request $request, $ordemServicoId)
+    {
+        $request->validate([
+            'imagem' => 'required|image|max:2048',
+            'obs' => 'nullable|string|max:255',
+        ]);
+    
+        // Salvar a imagem na pasta de uploads
+        $imagemPath = $request->file('imagem')->storeAs('imagens_os', $request->file('imagem')->getClientOriginalName(), 'public');
+
+    
+        // Criar uma nova instância do modelo ImagemOs
+        $imagem = new ImagemOs();
+        $imagem->nome = $request->file('imagem')->getClientOriginalName();
+        $imagem->data_registro = now();
+        $imagem->ordem_servico_id = $ordemServicoId; // Definir o ID da ordem de serviço corretamente
+        $imagem->obs = $request->input('obs');
+        $imagem->save();
+    
+        return redirect()->back()->with('success', 'Imagem enviada com sucesso.');
+    }
+    
+    public function getImagensSalvas($ordemServicoId)
+    {
+        $imagensSalvas = ImagemOs::where('ordem_servico_id', $ordemServicoId)->get();
+        
+        return view('os.servicos', compact('imagensSalvas', 'ordemServicoId'));
+    }
+    
 
 //fim funcionarios
 }

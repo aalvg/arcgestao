@@ -40,7 +40,7 @@
 									</div>
 									<div class="row">
 										<div class="form-group validated col-sm-12 col-lg-12">
-											<label class="col-form-label">Observações</label>
+											<label class="col-form-label">Equipamento</label>
 											<div class="">
 												<textarea class="form-control" name="texto" rows="3">{{{ isset($relatorio) ? $relatorio->texto : old('texto') }}}</textarea>
 												@if($errors->has('texto'))
@@ -53,22 +53,9 @@
 									</div>
 									<div class="row">
 										<div class="form-group validated col-sm-12 col-lg-12">
-											<label class="col-form-label">Equipamento</label>
-											<div class="">
-												<textarea class="form-control" name="equipamento" rows="3">{{{ isset($relatorio) ? $relatorio->equipamento : old('equipamentotxt') }}}</textarea>
-												@if($errors->has('equipamento'))
-												<div class="invalid-feedback">
-													{{ $errors->first('equipamento') }}
-												</div>
-												@endif
-											</div>
-										</div>
-									</div>
-									<div class="row">
-										<div class="form-group validated col-sm-12 col-lg-12">
 											<label class="col-form-label">Problema</label>
 											<div class="">
-												<textarea class="form-control" name="problema" rows="3">{{{ isset($relatorio) ? $relatorio->problema : old('problema') }}}</textarea>
+												<textarea class="form-control" name="problema" rows="3">{{{ isset($relatorio) ? $relatorio->Problema : old('problema') }}}</textarea>
 												@if($errors->has('problema'))
 												<div class="invalid-feedback">
 													{{ $errors->first('problema') }}

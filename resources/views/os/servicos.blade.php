@@ -81,22 +81,20 @@ $(document).ready(function() {
 
 	<div class="card-body">
 		<div class="col-sm-12 col-lg-12 col-md-12 col-xl-12">
-			<h4>Status:
-				@if(isset($ordem) && is_object($ordem) && property_exists($ordem, 'id'))
-					@if($ordem->estado == 'pd')
-						<span class="label label-xl label-inline label-light-warning">PENDENTE</span>
-					@elseif($ordem->estado == 'ap')
-						<span class="label label-xl label-inline label-light-success">APROVADO</span>
-					@elseif($ordem->estado == 'rp')
-						<span class="label label-xl label-inline label-light-danger">REPROVADO</span>
-					@else
-						<span class="label label-xl label-inline label-light-info">FINALIZADO</span>
-					@endif
+			<h4>Status: 
+				@if($ordem->estado == 'pd')
+				<span class="label label-xl label-inline label-light-warning">PENDENTE</span>
+				@elseif($ordem->estado == 'ap')
+				<span class="label label-xl label-inline label-light-success">APROVADO</span>
+				@elseif($ordem->estado == 'rp')
+				<span class="label label-xl label-inline label-light-danger">REPROVADO</span>
 				@else
-					<span class="label label-xl label-inline label-light-danger">ERRO</span>
+				<span class="label label-xl label-inline label-light-info">FINALIZADO</span>
 				@endif
+
 			</h4>
 		</div>
+		
 		
 		
 
@@ -112,16 +110,22 @@ $(document).ready(function() {
 		</div>
 
 		<div class="col-sm-12 col-lg-12 col-md-12 col-xl-12">
-
 			<h5>NFSe: 
-				@if($ordem->NfNumero)
-				<strong>{{$ordem->NfNumero}}</strong>
+				@if(isset($ordem) && $ordem->NfNumero)
+					<strong>{{ $ordem->NfNumero }}</strong>
 				@else
-				<strong> -- </strong>
+					<strong>--</strong>
 				@endif
 			</h5>
-			<h5>Usuario responsável: <strong class="text-success">{{$ordem->usuario->nome}}</strong></h5>
+			<h5>Usuário responsável: 
+				@if(isset($ordem) && $ordem->usuario)
+					<strong class="text-success">{{ $ordem->usuario->nome }}</strong>
+				@else
+					<strong class="text-danger">Usuário não encontrado</strong>
+				@endif
+			</h5>
 		</div>
+		
 	</div>
 
 	</div>
@@ -502,28 +506,36 @@ $(document).ready(function() {
 				<div class="card card-custom gutter-b example example-compact">
 					<div class="col-lg-12">
 						<div class="row">
-							@foreach($ordem->relatorios as $r)
+							
 								
 							<div class="col-xl-12 p-4">
 								<div class="form-group validated col-sm-12 col-lg-12">
 									<h4>Relatórios da OS</h4>
 								</div>
 								<div class="col-sm-12 col-lg-12 col-md-12 col-xl-12">
-									<a href="/ordemServico/addRelatorio/{{$ordem->id}}" class="btn btn-success">
-										<i class="la la-plus"></i>
-										Adicionar Relatório
-									</a>
-									<td class="datatable-cell"><span class="codigo" style="width: 150px;">
-										<a onclick='swal("Atenção!", "Deseja remover este registro?", "warning").then((sim) => {if(sim){ location.href="/ordemServico/deleteRelatorio/{{ $r->id }}" }else{return false} })' href="#!" class="btn btn-danger">
-											<span class="la la-trash"></span>
+									@if($ordem->relatorios->isEmpty())
+										<a href="/ordemServico/addRelatorio/{{$ordem->id}}" class="btn btn-success">
+											<i class="la la-plus"></i>
+											Adicionar Relatório
 										</a>
-										<a class="btn btn-primary" href="/ordemServico/editRelatorio/{{ $r->id }}">
-											<span class="la la-edit"></span>					
-										</a>
-										@endforeach
-									</span></td>
+									@endif
+									@foreach($ordem->relatorios as $r)
+										<td class="datatable-cell">
+											<span class="codigo" style="width: 150px;">
+												<a onclick='swal("Atenção!", "Deseja remover este registro?", "warning").then((sim) => {if(sim){ location.href="/ordemServico/deleteRelatorio/{{ $r->id }}" }else{return false} })' href="#!" class="btn btn-danger">
+													<span class="la la-trash"></span>
+												</a>
+												<a class="btn btn-primary" href="/ordemServico/editRelatorio/{{ $r->id }}">
+													<span class="la la-edit"></span>					
+												</a>
+											</span>
+										</td>
+									@endforeach
 								</div>
 							</div>
+							
+							
+							
 							<!-- 1 - FORMULARIOS COM DADOS DOS EQUIPAMENTOS -->
 							<div class="row" style="width: 100%;">
 								@if($ordem->relatorios->isEmpty())
@@ -531,12 +543,12 @@ $(document).ready(function() {
 								@else
 									@foreach($ordem->relatorios as $r)
 										<div class="col-md-6">
-											<label for="text1">Observações:</label>
+											<label for="text1">Equipamento:</label>
 											<span type="text" style="height: 200px" name="text2" id="text2" class="form-control form-control-lg">{{$r->texto}}</span>
 										</div>
 										<div class="col-md-6">
-											<label for="text2">Equipamento:</label>
-											<span type="text" style="height: 200px" name="text2" id="text2" class="form-control form-control-lg">{{$r->equipamento}}</span>
+											<label for="text1">Problema:</label>
+											<span type="text" style="height: 200px" name="text2" id="text2" class="form-control form-control-lg">{{$r->problema}}</span>
 										</div>
 									@endforeach
 								@endif
@@ -548,12 +560,12 @@ $(document).ready(function() {
 								@if(!empty($ordem->relatorios))
 									@foreach($ordem->relatorios as $r)
 										<div class="col-md-6">
-											<label for="text1">Problema:</label>
-											<span type="text" style="height: 200px" name="text2" id="text2" class="form-control form-control-lg">{{$r->problema}}</span>
-										</div>
-										<div class="col-md-6">
 											<label for="text2">Observações de recebimento:</label>
 											<span type="text" style="height: 200px" name="text2" id="text2" class="form-control form-control-lg">{{$r->recebimento}}</span>
+										</div>
+										<div class="col-md-6">
+											<label for="text1">Laudo Técnico:</label>
+											<span type="text" style="height: 200px" name="text2" id="text2" class="form-control form-control-lg">{{$r->laudo}}</span>
 										</div>
 									@endforeach
 								@endif
@@ -563,10 +575,6 @@ $(document).ready(function() {
 							<!-- 3 - FORMULARIOS COM DADOS DOS EQUIPAMENTOS -->
 							<div class="row" style="width: 100%;">
 								@foreach($ordem->relatorios as $r)
-									<div class="col-md-6">
-										<label for="text1">Laudo Técnico:</label>
-										<span type="text" style="height: 200px" name="text2" id="text2" class="form-control form-control-lg">{{$r->laudo}}</span>
-									</div>
 									<div class="col-md-6">
 										<label for="text1">RMA:</label>
 										<span type="text" style="height: 200px" name="text2" id="text2" class="form-control form-control-lg">{{$r->rma}}</span>
@@ -598,7 +606,7 @@ $(document).ready(function() {
 			</div>
 		</div>
 	</div>
-</div>
+
 <div class="modal fade" id="modal-desconto" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdrop" aria-hidden="true">
 	<div class="modal-dialog modal-sm" role="document">
 		<div class="modal-content">
@@ -627,4 +635,54 @@ $(document).ready(function() {
 		</div>
 	</div>
 </div>
+
+
+
+
+
+
+
+<form method="POST" action="{{ route('upload', ['ordemServicoId' => $ordem->id]) }}" enctype="multipart/form-data">
+    @csrf
+    <div class="form-container" style="padding: 30px; display: flex; align-items: center;">
+        <div class="form-group" style="width: 33.33%; margin-right: 10px;">
+            <label for="imagem">Upload de imagens:</label>
+            <input type="file" name="imagem" id="imagem" class="form-control-file">
+        </div>
+        <div class="form-group" style="width: 33.33%; margin-right: 10px;">
+            <label for="obs">Observação das imagens:</label>
+            <textarea name="obs" id="obs" class="form-control" style="height: 100px; width: 100%;"></textarea>
+        </div>
+        <div class="form-group" style="width: 33.33%; text-align: center;">
+            <button type="submit" class="btn btn-primary">Enviar Imagem</button>
+        </div>
+    </div>
+</form>
+
+
+
+
+<hr>
+<div>
+	<label for="imagem" style="padding: 30px;">Imagens salvas da OS:</label>
+</div>
+@foreach ($imagensSalvas as $imagem)
+    @if ($imagem->ordem_servico_id != $ordem->id)
+        @continue
+    @endif
+    <input type="hidden" name="ordem_servico_id" value="{{ $ordem->id }}">
+
+    <div style="padding: 30px;">
+        <img src="{{ asset('storage/imagens_os/' . $imagem->nome) }}" alt="Imagem" style="max-width: 150px; height: auto;">
+        <p>{{ $imagem->obs }}</p>
+    </div>
+@endforeach
+
+
+
+
+
+
+
+
 @endsection

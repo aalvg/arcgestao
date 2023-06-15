@@ -762,6 +762,8 @@ Route::middleware(['validaAcesso'])->group(function () {
 		Route::get('/editRelatorio/{id}', 'OrderController@editRelatorio');
 		Route::get('/deleteRelatorio/{id}', 'OrderController@deleteRelatorio');
 		Route::get('/alterarEstado/{id}', 'OrderController@alterarEstado');
+
+
 		Route::post('/alterarEstado', 'OrderController@alterarEstadoPost');
 		Route::get('/filtro', 'OrderController@filtro');
 
@@ -771,10 +773,15 @@ Route::middleware(['validaAcesso'])->group(function () {
 		Route::post('/save-product', 'OrderController@salvarProduto')->name('save.product');
 		Route::get('/obter-estoque/{produtoId}', 'OrderController@obterEstoque');
 		Route::get('/produtos-salvos', [OrderController::class, 'getProdutosSalvos'])->name('produtos.salvos');
-
+		Route::get('/imagens-salvas', [OrderController::class, 'getImagensSalvas'])->name('imagens.salvas');
 
 
 		// web.php
+		Route::post('/ordemServico/servicosordem/{ordemServicoId}/upload', 'OrderController@uploadImagem')->name('upload');
+
+
+
+
 		Route::post('/salvar-mensagem', 'OrderController@salvar')->name('salvarMensagem');
 		Route::post('/addRelatorio', 'OrderController@saveRelatorio');
 		Route::post('/updateRelatorio', 'OrderController@updateRelatorio');

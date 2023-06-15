@@ -1,6 +1,13 @@
 @extends('os.print_default')
 @section('content')
 
+<script type="text/javascript">
+    window.onload = function() {
+        window.print();
+    };
+</script>
+
+
 <div class="row corpo-exame">
 	<!-- #########################          PRODUTOS         ############################-->
 	@if(isset($produtosSalvos) && $produtosSalvos->isNotEmpty())
@@ -114,33 +121,68 @@
 							<div class="row" style="width: 100%;">
 								@foreach($ordem->relatorios as $r)
 								@endforeach
-								<div class="col-md-6" >
-									<p><label class="lab" for="text1">Observações:</label></p>
-									<span type="text" style="height: 200px" name="text2" id="text2" class="form-control form-control-lg">{{$r->texto}}</span>
-								</div>
-								<div class="col-md-6">
-									<p><label class="lab" for="text2">Equipamento:</label></p>
-									<span type="text" style="height: 200px" name="text2" id="text2" class="form-control form-control-lg">{{$r->equipamento}}</span>
-								</div>
+
+								@if(!empty($r->texto))
+									<div class="col-md-6" style="border-bottom: 1px solid black;">
+									
+										<p><label class="lab" for="text1">Equipamento:</label></p>
+										<span type="text" style="height: 200px" name="text2" id="text2" class="form-control form-control-lg">{{$r->texto}}</span>
+								@endif
+									</div>
+
+								@if(!empty($r->problema))
+									<div class="col-md-6" style="border-bottom: 1px solid black;">
+										<p><label class="lab" for="text1">Problema:</label></p>
+										<span type="text" name="text2" id="text2" class="form-control form-control-lg">{{$r->problema}}</span>
+								@endif
+									</div>
+								@if(!empty($r->recebimento))
+									<div class="col-md-6" style="border-bottom: 1px solid black;">
+										<p><label class="lab" for="text2">Observações de recebimento:</label></p>
+										<span type="text" name="text2" id="text2" class="form-control form-control-lg">{{$r->recebimento}}</span>
+								@endif
+									</div>
+
+								@if(!empty($r->laudo))
+									<div class="col-md-6" style="border-bottom: 1px solid black;">
+										<p><label class="lab" for="text3">Laudo Técnico:</label></p>
+										<span type="text" name="text3" id="text2" class="form-control form-control-lg">{{$r->laudo}}</span>
+								@endif
+									</div>
 							
-								<div class="col-md-6" >
-									<p><label class="lab" for="text1">Problema:</label></p>
-									<span type="text" name="text2" id="text2" class="form-control form-control-lg">{{$r->problema}}</span>
-								</div>
-								<div class="col-md-6">
-									<p><label class="lab" for="text2">Observações de recebimento:</label></p>
-									<span type="text" name="text2" id="text2" class="form-control form-control-lg">{{$r->recebimento}}</span>
-								</div>
-								<div class="col-md-6" >
-									<p><label class="lab" for="text3">Laudo Técnico:</label></p>
-									<span type="text" name="text3" id="text2" class="form-control form-control-lg">{{$r->laudo}}</span>
-								</div>
-								<div class="col-md-6" >
-									<p><label class="lab" for="text3">RMA:</label></p>
-									<span type="text" name="text3" id="text2" class="form-control form-control-lg">{{$r->rma}}</span>
-								</div>
+								@if(!empty($r->rma))
+									<div class="col-md-6" style="border-bottom: 1px solid black;">
+										<p><label class="lab" for="text3">RMA:</label></p>
+										<span type="text" name="text3" id="text2" class="form-control form-control-lg">{{$r->rma}}</span>
+								@endif
+									</div>
 							</div>
-							<!-- 1 - FIM DOS FORMULARIOS COM DADOS DOS EQUIPAMENTOS -->
+							<style>
+								.image-container {
+    								display: flex;
+    								flex-wrap: wrap;
+								}
+
+								.image-item {
+    								margin-right: 10px;
+									margin-bottom: 30px; /* Espaço embaixo das imagens */
+								}
+							</style>
+						@if ($imagensSalvas->count() > 0)
+							<p><label class="lab" for="text2">Imagens da OS:</label></p>
+							<div class="col-md-6 image-container">
+								@foreach ($imagensSalvas as $imagem)
+									@if ($imagem->ordem_servico_id != $ordem->id)
+										@continue
+									@endif
+									<input type="hidden" name="ordem_servico_id" value="{{ $ordem->id }}">
+									<div class="image-item">
+										<img src="{{ asset('storage/imagens_os/' . $imagem->nome) }}" alt="Imagem" style="max-width: 100px; height: auto;">
+										<p>{{ $imagem->obs }}</p>
+									</div>
+								@endforeach
+							</div>
+						@endif
 	</div>
 </div>
 @endsection
