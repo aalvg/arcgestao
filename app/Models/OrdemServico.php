@@ -7,7 +7,7 @@ class OrdemServico extends Model
 {
 
     protected $fillable = [
-        'descricao', 'cliente_id', 'usuario_id'
+        'descricao', 'cliente_id', 'usuario_id', 'senha'
     ];
 
     public function servicos(){
@@ -28,6 +28,10 @@ class OrdemServico extends Model
 
     public function usuario(){
         return $this->belongsTo(Usuario::class, 'usuario_id');
+    }
+
+    public function senha(){
+        return $this->belongsTo(Usuario::class, 'senha');
     }
 
     public static function filtroData($dataInicial, $dataFinal, $estado){

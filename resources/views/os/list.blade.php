@@ -168,6 +168,11 @@
 									<a class="kt-widget__data text-info">FINALIZADO</a>
 									@endif
 								</div>
+								<tr>
+									<span class="kt-widget__label">Senha da OS</span>
+									<a class="kt-widget__data text-primary">{{ $o->senha }}</a>
+									
+								</tr>
 
 
 							</div>
@@ -191,6 +196,4 @@
 		</div>
 	</div>
 </div>
-
-
 @endsection	

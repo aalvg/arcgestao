@@ -762,11 +762,19 @@ Route::middleware(['validaAcesso'])->group(function () {
 		Route::get('/editRelatorio/{id}', 'OrderController@editRelatorio');
 		Route::get('/deleteRelatorio/{id}', 'OrderController@deleteRelatorio');
 		Route::get('/alterarEstado/{id}', 'OrderController@alterarEstado');
+		Route::post('/ordemServico/visualizar/{id}/{senha}', 'OrderController@visualizarServicos')->name('ordemServico.visualizarServicos');
+		
 
+
+		
+		
+		
+		
+		
+		Route::get('/login', 'Auth\LoginController@showLoginForm')->name('login');
 
 		Route::post('/alterarEstado', 'OrderController@alterarEstadoPost');
 		Route::get('/filtro', 'OrderController@filtro');
-
 		// web.php
 		Route::post('/remove/product', 'OrderController@removeProduct')->name('remove.product');
 		Route::get('/form', [OrderController::class, 'showForm']);
@@ -779,7 +787,10 @@ Route::middleware(['validaAcesso'])->group(function () {
 		// web.php
 		Route::post('/ordemServico/servicosordem/{ordemServicoId}/upload', 'OrderController@uploadImagem')->name('upload');
 
-
+		Route::get('/acessar-os', function () {
+			return view('os.acessarOS');
+		})->name('ordemServico.acessarOs');
+		
 
 
 		Route::post('/salvar-mensagem', 'OrderController@salvar')->name('salvarMensagem');
@@ -802,12 +813,14 @@ Route::middleware(['validaAcesso'])->group(function () {
 
 		Route::post('/setaDesconto', 'OrderController@setaDesconto');
 /* TESTANDO ROTAS DE VENDAS EM ORDEM DE SERVIÇO*/
-
-
-
-
-
 	});
+
+
+	
+	
+	
+	
+	
 
 	Route::group(['prefix' => 'semRegistro'],function(){
 		Route::get('/', 'ApplianceNotFounController@index');

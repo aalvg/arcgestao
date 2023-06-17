@@ -74,5 +74,7 @@ class Kernel extends HttpKernel
         'atendimentoAtivo' => \App\Http\Middleware\AtendimentoAtivo::class,
         'autoAtendimentoAtivo' => \App\Http\Middleware\AutoAtendimentoAtivo::class,
         'validaAcesso' => \App\Http\Middleware\ValidaAcesso::class,
+        'allow.guest' => \App\Http\Middleware\AllowGuestAccess::class,
+
     ];
 }

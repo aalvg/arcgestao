@@ -51,6 +51,9 @@ class OrderController extends Controller
 
     public function new(){
         $clientes = Cliente::orderBy('razao_social')->get();
+                // Gerar uma senha numérica aleatória de 6 dígitos
+
+                // Atribuir a senha à ordem de serviço
         return view('os/register')
         ->with('client', true)
         ->with('clientes', $clientes)
@@ -65,6 +68,8 @@ class OrderController extends Controller
         }else{
             session()->flash("mensagem_erro", "Erro ao remover!");
         }
+
+
         return redirect("/ordemServico");
 
     }
@@ -74,11 +79,13 @@ class OrderController extends Controller
 
         $order = new OrdemServico;
         $request->merge([ 'valor' =>str_replace(",", ".", $request->input('valor'))]);
-
+        $senha = $request->input('senha');
         $cliente = $request->input('cliente');
         $cliente = explode("-", $cliente);
         $cliente = $cliente[0];
 
+        $senha = mt_rand(100000, 999999); // Gera uma senha numérica aleatória de 6 dígitos
+        $request->session()->put('senha', $senha);
         $result = $order->create([
             
             'equipamento' => $request->input('equipamento'),
@@ -88,6 +95,7 @@ class OrderController extends Controller
             'rma' => $request->input('rma'),
             'usuario_id' => get_id_user(),
             'cliente_id' => $cliente,
+            'senha' => $senha,
             
         ]);
 
@@ -99,6 +107,7 @@ class OrderController extends Controller
         }
 
         
+        session(['senha' => $senha]);
 
         return redirect("/ordemServico/servicosordem/$result->id");
     }
@@ -116,6 +125,8 @@ class OrderController extends Controller
         $funcionarios = Funcionario::all();
         $produtos = Produto::all();
         $temServicos = count(Servico::all()) > 0;
+        $senha = session('senha');
+
         $temFuncionarios = count(Funcionario::all()) > 0;
         
          // echo json_encode($ordem->servicos);
@@ -123,6 +134,7 @@ class OrderController extends Controller
         ->with('produtos', $produtos)
         ->with('ordem', $ordem)
         ->with('produtosSalvos', $produtosSalvos)
+        ->with('senha', $senha)
         ->with('relatorioJs', true)
         ->with('funcionario', true)
         ->with('servicos', $servicos)
@@ -411,10 +423,10 @@ public function getProdutosSalvos($ordemServicoId)
 
         if(isset($cliente) && isset($dataInicial) && isset($dataFinal)){
             $orders = OrdemServico::filtroDataFornecedor(
-                $cliente, 
-                $this->parseDate($dataInicial),
-                $this->parseDate($dataFinal, true),
-                $estado
+            $cliente, 
+            $this->parseDate($dataInicial),
+            $this->parseDate($dataFinal, true),
+            $estado,
             );
         }else if(isset($cliente) && isset($dataFinal)){
             $orders = OrdemServico::filtroData(
@@ -433,6 +445,7 @@ public function getProdutosSalvos($ordemServicoId)
 
         return view('os/list')
         ->with('orders', $orders)
+        ->with('servicoOs')
         ->with('title', 'Orders de Serviço');
     }
 
@@ -642,7 +655,7 @@ public function getProdutosSalvos($ordemServicoId)
             ->header('X-Content-Type-Options', 'nosniff')
             ->header('X-XSS-Protection', '1; mode=block')
             ->header('Content-Disposition', 'inline; filename="imprimir_os.html"')
-            ->header('X-Powered-By', 'ChatGPT');
+            ->header('X-Powered-By', 'Host Arena');
     }
     
 
@@ -745,6 +758,57 @@ public function getProdutosSalvos($ordemServicoId)
         
         return view('os.servicos', compact('imagensSalvas', 'ordemServicoId'));
     }
+
+    public function visualizarServicos($id, $senha)
+    {
+        $ordem = OrdemServico::where('id', $id)->where('senha', $senha)->first();
+    
+        if ($ordem) {
+            $servico = ServicoOs::find($id);
+            $imagensSalvas = ImagemOs::where('ordem_servico_id', $id)->get();
+            $produtosSalvos = ProdutoServ::all();
+    
+            return view('os.visualizar_servicos')
+                ->with('servico', $servico)
+                ->with('imagensSalvas', $imagensSalvas)
+                ->with('produtosSalvos', $produtosSalvos)
+                ->with('ordem', $ordem)
+                ->with('title', 'Imprimindo OS');
+        } else {
+            return redirect()->back()->with('error', 'A senha fornecida é inválida para esta ordem de serviço.');
+        }
+    }
+    
+    
+
+    public function processarVisualizacao(Request $request)
+    {
+        $ordemServicoId = $request->input('ordem_servico_id');
+        $senha = $request->input('senha');
+    
+        $ordem = OrdemServico::where('id', $ordemServicoId)->where('senha', $senha)->first();
+    
+        if ($ordem) {
+            return redirect()->route('ordemServico.visualizarServicos', ['id' => $ordemServicoId, 'senha' => $senha]);
+        } else {
+            return redirect()->back()->with('error', 'A ordem de serviço ou senha fornecida é inválida.');
+        }
+    }
+
+    public function acessarOs()
+    {
+        $ordem = OrdemServico::all();
+        $ordem->save();
+        
+        return redirect("/ordemServico/acessar-os")
+        ->with('ordem', $ordem);
+    }
+    
+    
+    
+    
+
+
     
 
 //fim funcionarios

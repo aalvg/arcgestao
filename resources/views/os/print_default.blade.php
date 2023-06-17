@@ -35,6 +35,7 @@
 					<label>Endreço: <strong>{{$ordem->cliente->rua}}, {{$ordem->cliente->numero}} - {{$ordem->cliente->bairro}}
 					</strong></label><br>
 					<label>Email: <strong>{{$ordem->cliente->email}}</strong></label><br>
+					
 
 
 				</div>
@@ -42,6 +43,7 @@
 					<label></label><br>
 					<label>Cidade: <strong>{{$ordem->cliente->cidade->nome}} - {{$ordem->cliente->cidade->uf}}</strong></label><br>
 					<label>Celular: <strong>{{$ordem->cliente->celular}}</strong></label><br>
+					<label>A senha da OS é: <Strong>{{$ordem->senha}}</Strong></label>
 					<label></label>
 
 				</div>

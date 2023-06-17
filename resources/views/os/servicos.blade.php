@@ -124,6 +124,12 @@ $(document).ready(function() {
 					<strong class="text-danger">Usuário não encontrado</strong>
 				@endif
 			</h5>
+			<h5>A senha gerada para esta ordem de serviço é:
+				<strong class="text-success">{{ $ordem->senha }}</strong>
+			</h5>
+			<a href="/ordemServico/acessar-os">Visualizar Serviços</a>
+
+
 		</div>
 		
 	</div>
@@ -677,12 +683,6 @@ $(document).ready(function() {
         <p>{{ $imagem->obs }}</p>
     </div>
 @endforeach
-
-
-
-
-
-
 
 
 @endsection
