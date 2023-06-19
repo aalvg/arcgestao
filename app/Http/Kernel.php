@@ -14,7 +14,6 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $middleware = [
-        // \App\Http\Middleware\TrustHosts::class,
         \App\Http\Middleware\TrustProxies::class,
         \Fruitcake\Cors\HandleCors::class,
         \App\Http\Middleware\PreventRequestsDuringMaintenance::class,
@@ -33,10 +32,10 @@ class Kernel extends HttpKernel
             \App\Http\Middleware\EncryptCookies::class,
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Illuminate\Session\Middleware\StartSession::class,
-            // \Illuminate\Session\Middleware\AuthenticateSession::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            
         ],
 
         'api' => [
@@ -74,7 +73,5 @@ class Kernel extends HttpKernel
         'atendimentoAtivo' => \App\Http\Middleware\AtendimentoAtivo::class,
         'autoAtendimentoAtivo' => \App\Http\Middleware\AutoAtendimentoAtivo::class,
         'validaAcesso' => \App\Http\Middleware\ValidaAcesso::class,
-        'allow.guest' => \App\Http\Middleware\AllowGuestAccess::class,
-
     ];
 }

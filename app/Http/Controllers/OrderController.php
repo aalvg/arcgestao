@@ -28,14 +28,17 @@ use \Carbon\Carbon;
 
 class OrderController extends Controller
 {	
-	public function __construct(){
+    public function __construct()
+    {
         $this->middleware(function ($request, $next) {
-            $value = session('user_logged');
-            if(!$value){
-                return redirect("/login");
+            if ($request->is('ordemServico/acessar-os') || $request->is('ordemServico/visualizar')) {
+                // Se a rota for "/ordemServico/acessar-os", permite o acesso sem autenticação
+                return $next($request);
             }
+        
             return $next($request);
         });
+        
     }
 
     public function index(){
@@ -759,25 +762,51 @@ public function getProdutosSalvos($ordemServicoId)
         return view('os.servicos', compact('imagensSalvas', 'ordemServicoId'));
     }
 
-    public function visualizarServicos($id, $senha)
+    public function acessarOs(Request $request)
     {
+        $ordem = OrdemServico::all();
+        
+        
+        return view('os.acessarOS', compact('ordem'));
+
+    }
+    
+    public function visualizarServicos(Request $request)
+    {
+        $id = $request->input('ordem_servico_id');
+        $senha = $request->input('senha');
+        
         $ordem = OrdemServico::where('id', $id)->where('senha', $senha)->first();
-    
+        $imagensSalvas = ImagemOs::where('ordem_servico_id', $ordem)->get();
+        $config = ConfigNota::first();
+        $produtosSalvos = ProdutoServ::all();
         if ($ordem) {
-            $servico = ServicoOs::find($id);
-            $imagensSalvas = ImagemOs::where('ordem_servico_id', $id)->get();
-            $produtosSalvos = ProdutoServ::all();
+            $content = view('os.visualizar_servicos')
+            ->with('ordem', $ordem)
+            ->with('config', $config)
+            ->with('produtosSalvos', $produtosSalvos)
+            ->with('imagensSalvas', $imagensSalvas)
+            ->with('title', 'Imprimindo OS')
+            ->render();
     
-            return view('os.visualizar_servicos')
-                ->with('servico', $servico)
-                ->with('imagensSalvas', $imagensSalvas)
-                ->with('produtosSalvos', $produtosSalvos)
-                ->with('ordem', $ordem)
-                ->with('title', 'Imprimindo OS');
+        return response($content)
+            ->header('Content-Type', 'text/html')
+            ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+            ->header('Pragma', 'no-cache')
+            ->header('X-Content-Type-Options', 'nosniff')
+            ->header('X-XSS-Protection', '1; mode=block')
+            ->header('Content-Disposition', 'inline; filename="imprimir_os.html"')
+            ->header('X-Powered-By', 'Host Arena');
+
+
         } else {
             return redirect()->back()->with('error', 'A senha fornecida é inválida para esta ordem de serviço.');
         }
     }
+    
+    
+    
+    
     
     
 
@@ -795,14 +824,8 @@ public function getProdutosSalvos($ordemServicoId)
         }
     }
 
-    public function acessarOs()
-    {
-        $ordem = OrdemServico::all();
-        $ordem->save();
-        
-        return redirect("/ordemServico/acessar-os")
-        ->with('ordem', $ordem);
-    }
+
+    
     
     
     

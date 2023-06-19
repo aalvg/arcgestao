@@ -3,7 +3,15 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\OrderController;
 
+Route::group(['middleware' => ['web']], function () {
+	// Rotas públicas
 
+	// ...
+
+	// Rota sem autenticação
+	Route::match(['get', 'post'], '/acessar-os', 'OrderController@acessarOs')->name('ordemServico.acessarOs');
+	Route::post('/visualizar', 'OrderController@visualizarServicos')->name('ordemServico.visualizarServicos');
+});
 
 Route::group(['prefix' => '/'], function(){
 	Route::get('/', 'DeliveryController@index');
@@ -17,6 +25,7 @@ Route::group(['prefix' => 'login'],function(){
 });
 
 Route::get('/rotaEntrega/{id}', 'DeliveryController@rotaEntrega');
+
 
 Route::group(['prefix' => '/pagseguro'], function(){
 	Route::get('/getSessao', 'PagSeguroController@getSessao');
@@ -762,17 +771,15 @@ Route::middleware(['validaAcesso'])->group(function () {
 		Route::get('/editRelatorio/{id}', 'OrderController@editRelatorio');
 		Route::get('/deleteRelatorio/{id}', 'OrderController@deleteRelatorio');
 		Route::get('/alterarEstado/{id}', 'OrderController@alterarEstado');
-		Route::post('/ordemServico/visualizar/{id}/{senha}', 'OrderController@visualizarServicos')->name('ordemServico.visualizarServicos');
+
 		
 
 
+
+
 		
-		
-		
-		
-		
+
 		Route::get('/login', 'Auth\LoginController@showLoginForm')->name('login');
-
 		Route::post('/alterarEstado', 'OrderController@alterarEstadoPost');
 		Route::get('/filtro', 'OrderController@filtro');
 		// web.php
@@ -783,16 +790,9 @@ Route::middleware(['validaAcesso'])->group(function () {
 		Route::get('/produtos-salvos', [OrderController::class, 'getProdutosSalvos'])->name('produtos.salvos');
 		Route::get('/imagens-salvas', [OrderController::class, 'getImagensSalvas'])->name('imagens.salvas');
 
-
 		// web.php
+
 		Route::post('/ordemServico/servicosordem/{ordemServicoId}/upload', 'OrderController@uploadImagem')->name('upload');
-
-		Route::get('/acessar-os', function () {
-			return view('os.acessarOS');
-		})->name('ordemServico.acessarOs');
-		
-
-
 		Route::post('/salvar-mensagem', 'OrderController@salvar')->name('salvarMensagem');
 		Route::post('/addRelatorio', 'OrderController@saveRelatorio');
 		Route::post('/updateRelatorio', 'OrderController@updateRelatorio');
@@ -817,7 +817,7 @@ Route::middleware(['validaAcesso'])->group(function () {
 
 
 	
-	
+
 	
 	
 	

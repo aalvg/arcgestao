@@ -1,0 +1,206 @@
+.corpo{
+	background: #fff;
+
+}
+
+#pdf{
+
+
+	margin-top: 5px;
+	margin-bottom: 5px;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+.row{
+	align-items: center !important;
+	max-width: none !important;
+	width: 100% ;
+}
+
+h5{
+	color: black !important;
+	font-size: 20px !important;
+}
+p{
+	color: black !important;
+	align-items: center !important;
+}
+
+.logo img{
+	max-width: 150px !important; 
+	max-height: 100px !important;
+}
+
+.logo p{
+	color: black !important;
+	font-size: 11px !important;
+}
+
+.topo h5{
+
+	color: black !important;
+	font-size: 16px !important;
+}
+
+.topo label{
+	color: black !important;
+	font-size: 11px !important;
+}
+
+.topo span{
+	color: black !important;
+	font-size: 10px !important;
+}
+
+.topo{
+	line-height: 15px !important;
+	border-bottom: 1px solid black !important;
+}
+
+.tipo-exame{
+	border-bottom: 1px solid black !important;
+}
+
+.tipo-exame h5{
+	color: black !important;
+}
+
+.identificacao-paciente{
+	line-height: 15px !important;
+	border-bottom: 1px solid black !important;
+}
+
+.identificacao-paciente label{
+	color: black !important;
+	font-size: 12px !important;
+}
+
+.rodape{
+	padding-top: 10px !important;
+	line-height: 15px !important;
+}
+
+.rodape span{
+	color: black !important;
+	font-size: 12px !important;
+}
+
+.rodape-info{
+	line-height: 10px !important;
+}
+
+.rodape-info h6{
+	color: black !important;
+}
+
+.rodape-info span{
+	font-size: 12.2px !important;
+	color: black !important;
+}
+
+.corpo-exame{
+	line-height: 1px !important;
+}
+
+.corpo-exame span{
+	color: black;
+	font-size: 11px;
+}
+
+.corpo-exame h6{
+	color: black !important;
+	font-weight: bold !important;
+	padding-bottom: 2px !important;
+
+}
+
+.corpo-exame label{
+	color: black !important;
+	font-size: 11px !important;
+}
+
+.observacao{
+	border-bottom: 1px solid black !important;
+}
+
+.observacao h6{
+	font-weight: bold !important;
+	color: black !important;
+	text-decoration: underline !important;
+}
+
+.observacao span{
+	color: black !important;
+	font-size: 10px !important;
+}
+
+.assinatura{
+	width: 140px !important;
+	height: 40px !important;
+}
+
+.traco-assinatura{
+	width: 50%;
+	height: 1px;
+	background-color: black;
+	margin-top: -15px;
+	margin-left: 25%;
+}
+/* lab é o css do titulo */
+.lab{ 
+	width: 100%;
+	font-size: 11px;
+	margin-left: auto;
+	font-weight: bold;
+	text-transform: uppercase;
+
+}
+/* linha embaixo do conteudo */
+.col-md-6{
+	
+	line-height: 15px;
+	padding-bottom: 10px;
+}
+/* referente ao texto descritivo */
+.form-control.form-control-lg{
+	font-size: 11px;
+}
+.arc{
+	text-align: center;
+	padding-top: 2px;
+	font-size: 10px;
+	text-transform: uppercase;
+	font-weight: bold;
+}
+
+.OS{
+	font-weight: bold;
+}
+
+.identificacao-paciente{
+	padding-bottom: 10px;
+}
+
+.responsavel{
+	font-size: 10px;
+	font-weight: bold;
+}
+
+.span-equal-height {
+	display: inline-block;
+	height: 200px; /* Adjust the height as needed */
+	overflow-y: auto; /* Add scrollbars if content exceeds the height */
+}
+
+.td-inline {
+    display: inline-block;
+    width: 50%; /* Adjust the width as needed */
+}
+
+
+
+
+
+
+
+
