@@ -3,6 +3,10 @@
 @section('content')
 
 <html>
+        <!-- ############################################################################################
+        Esse código pertence a tela de vizualização da ordem de serviço para que o cliente possa 
+        acessar sua OS e verificar o andamento da manutenção de sua máquina.
+        ########################################################################################-->
 <head>
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script type="text/javascript" src="/js/html2canvas.min.js"></script>

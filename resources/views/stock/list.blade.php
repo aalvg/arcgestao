@@ -57,17 +57,24 @@
 													{{$e->produto->unidade_venda}}
 												</span></td>
 
-												<td class="datatable-cell"><span class="codigo" style="width: 80px;">
-													{{ number_format(str_replace(",", "", $e->valorCompra()) * $e->quantidade, 2, ',', '.') }}
-												</span></td>
+											
 
 												<td class="datatable-cell"><span class="codigo" style="width: 80px;">
-													{{ number_format(str_replace(",", "", $e->valorCompra()) * $e->quantidade, 2, ',', '.') }}
+													@if (is_numeric($e->valorCompra()) && is_numeric($e->quantidade))
+														{{ number_format($e->valorCompra() * $e->quantidade, 2, ',', '.') }}
+													@else
+														Valor inválido
+													@endif
 												</span></td>
+												
 
 												<?php 
-												$subtotal += $e->quantidade * $e->produto->valor_compra;
+    												if (is_numeric($e->quantidade) && is_numeric($e->produto->valor_compra)) {
+        				
+														$subtotal += $e->quantidade * $e->produto->valor_compra;
+    												}
 												?>
+
 
 											</tr>
 											@endforeach

@@ -20,9 +20,16 @@ class Estoque extends Model
      * Summary of valorCompra
      * @return string
      */
-    public function valorCompra(){
-        return number_format($this->valor_compra/$this->produto->conversao_unitaria, 2);
+    public function valorCompra()
+    {
+        if (is_numeric($this->valor_compra) && is_numeric($this->produto->conversao_unitaria)) {
+            return $this->valor_compra / $this->produto->conversao_unitaria;
+        } else {
+            return 0; // ou um valor padrão adequado
+        }
     }
+    
+    
 
     public function value_purchase($productId = null){
 
