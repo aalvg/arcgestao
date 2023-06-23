@@ -12,7 +12,7 @@
 			</div>
 			@endif
 
-			<form method="get" action="/order/cashFlowFilter" class="row col s6">
+			<form method="get" action="/ordemServico/cashFlowFilter" class="row col s6">
 				<div class="input-field col s4">
 			          <input id="date_start" name="date_start" type="text" class="datepicker">
 			          <label for="date_start">Data Inicio</label>

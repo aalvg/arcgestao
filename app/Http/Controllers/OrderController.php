@@ -16,13 +16,16 @@ use App\Models\Produto;
 use App\Models\Mensagem;
 use App\Models\ProdutoServ;
 use App\Models\ImagemOs;
+use App\Helpers\StockMove;
+use App\Models\ItemVenda;
+use App\Models\Receita;
+use App\Utils\EstoqueUtils; // Importe a classe onde está implementada a função downStock
 use Intervention\Image\Facades\Image;
 
 
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
-use App\Helpers\StockMove;
 use \Carbon\Carbon;
 
 
@@ -131,6 +134,33 @@ class OrderController extends Controller
         $senha = session('senha');
 
         $temFuncionarios = count(Funcionario::all()) > 0;
+
+
+         // Cálculo do valor total da ordem de serviço
+        $produtoTotal = 0;
+        $servicoTotal = 0;
+
+        foreach ($produtosSalvos as $produto) {
+            if ($produto->ordem_servico_id != $ordem->id) {
+                continue;
+            }
+
+            $subtotal = $produto->valor * $produto->produto_id;
+            $valorTotal = $produto->valor * $produto->unidades;
+            $produtoTotal += $valorTotal;
+        }
+
+        foreach ($ordem->servicos as $s) {
+            $servicoTotal += $s->servico->valor * $s->quantidade;
+        }
+
+        $valorTotalOS = $produtoTotal + $servicoTotal - $ordem->desconto - $ordem->sinal_compra;
+
+        // Atualização do valor total da ordem de serviço
+        $ordem->valor = $valorTotalOS;
+        $ordem->save();
+
+
         
          // echo json_encode($ordem->servicos);
         return view('os/servicos')
@@ -170,7 +200,6 @@ class OrderController extends Controller
     }
 
     
-
 
 
 
@@ -230,6 +259,16 @@ class OrderController extends Controller
             // Ocorreu um erro ao salvar o produto
             session()->flash('mensagem_erro', 'Erro ao adicionar o produto!');
         }
+
+        // Verifique se o estado da ordem de serviço foi alterado para "Finalizado"
+        $ordemServico = OrdemServico::find($request->input('ordem_servico_id'));
+        if ($ordemServico->estado === 'Finalizado') {
+        // Atualize a quantidade em estoque dos produtos
+            foreach ($selectedProductIds as $index => $productId) {
+                $produto = Produto::find($productId);
+                $produto->estoque->decrement('quantidade', $unidades[$index]);
+            }
+        }
     
         // Limpe a lista de produtos selecionados na sessão
         session()->forget('selected_products');
@@ -244,16 +283,32 @@ public function obterEstoque($produtoId)
 {
     $produto = Produto::find($produtoId);
     if ($produto) {
-        $estoque = $produto->estoque->quantidade;
-        
+        $estoque = $produto->estoqueAtual();
+
         // ... lógica de atualização do estoque ...
-        
+
         // Retorna o estoque atualizado
         return response()->json(['estoque' => $estoque]);
     } else {
         return response()->json(['error' => 'Produto não encontrado'], 404);
     }
 }
+
+
+
+// app/Models/Produto.php
+
+// ...
+
+public function atualizarEstoque($quantidade)
+{
+    $estoque = $this->estoqueAtual();
+    $estoque -= $quantidade;
+    $this->estoque->quantidade = $estoque;
+    $this->estoque->save();
+}
+
+
 
 public function showServicos($ordemServicoId)
 {
@@ -399,21 +454,49 @@ public function getProdutosSalvos($ordemServicoId)
         ->with('title', 'Alterar Estado de OS');
     }
 
-    public function alterarEstadoPost(Request $request){
-        $ordem = OrdemServico::
-        where('id', $request->id)
-        ->first();
 
+    public function alterarEstadoPost(Request $request)
+    {
+        $ordem = OrdemServico::where('id', $request->id)->first();
         $ordem->estado = $request->novo_estado;
         $result = $ordem->save();
+    
+        if ($result) {
+            // Verifica se o estado foi alterado para 'fz' (Finalizado)
+            if ($request->novo_estado == 'fz') {
+                $produtosServ = ProdutoServ::where('ordem_servico_id', $request->id)->get();
+    
+                foreach ($produtosServ as $produtoServ) {
+                    $produto = Produto::find($produtoServ->produto_id);
+    
+                    if ($produto) {
+                        $quantidade = $produtoServ->unidades;
+    
+                        $stockMove = new StockMove();
+                        $stockMove->downStock($produto->id, $quantidade);
+                    }
+                }
+                
+            // Adicionar o valor total ao fluxo de caixa
 
-        if($result){
+            }
+    
             session()->flash('mensagem_sucesso', 'Estado Alterado!');
-        }else{
+        } else {
             session()->flash('mensagem_erro', 'Erro!');
         }
-
+    
         return redirect("/ordemServico/servicosordem/$request->id");
+    }
+
+    private function downStock($produtoId, $quantidade)
+    {
+        $produto = Produto::find($produtoId);
+    
+        if ($produto) {
+            $produto->estoque -= $quantidade;
+            $produto->save();
+        }
     }
 
     public function filtro(Request $request){
@@ -451,6 +534,8 @@ public function getProdutosSalvos($ordemServicoId)
         ->with('servicoOs')
         ->with('title', 'Orders de Serviço');
     }
+
+
 
     public function saveRelatorio(Request $request){
         
@@ -554,8 +639,8 @@ public function getProdutosSalvos($ordemServicoId)
 
         $dateStart = $this->validDate(Date('Y-m-d'));
         $dateLast = $this->validDate(Date('Y-m-d'), true);
-        $orders = Order::
-        whereBetween('date_register', [$dateStart, $dateLast])
+        $orders = ordemServico::
+        whereBetween('data_registro', [$dateStart, $dateLast])
         ->get();
 
         return view('os/flow')
@@ -564,48 +649,72 @@ public function getProdutosSalvos($ordemServicoId)
         ->with('title', 'Orders de Serviço');
     }
 
-    public function find(Request $request){
+    public function find(Request $request)
+    {
         $id = $request->id;
-        $order = ordemServico::find($id);
-        return $order;
+        $order = OrdemServico::find($id);
+    
+        // Obter informações adicionais relacionadas ao orçamento
+        
+    
+        $client = $order->cliente;
+        $user = $order->usuario;
+        
         $services = [];
         $products = [];
-
-        foreach($order->budget->services as $o){
+        $totalValue = 0;
+    
+        foreach ($order->budget->services as $o) {
             $temp = [
-                'quantity' => $o->quantity,
-                'value' => $o->value,
-                'name' => $o->service->description   
+                'quantidade' => $o->quantity,
+                'valor' => $o->value,
+                'nome' => $o->service->description    
             ];
             array_push($services, $temp);
+    
+            $totalValue += $o->quantity * $o->value;
         }
-
-        foreach($order->budget->products as $o){
+    
+        foreach ($order->budget->products as $o) {
             $temp = [
-                'quantity' => $o->quantity,
-                'value' => $o->value,
-                'name' => $o->product->name   
+                'quantidade' => $o->quantity,
+                'valor' => $o->value,
+                'nome' => $o->product->name   
             ];
             array_push($products, $temp);
+    
+            $totalValue += $o->quantity * $o->value;
         }
-
+    
+        // Montar o objeto de resposta
         $resp = [
             'id' => $order->id,
-            'warranty' => $order->warranty,
-            'client' => $order->budget->client->name,
-            'services' => $services,
-            'payment_form' => $order->payment_form,
-            'products' => $products,
-            'note' => $order->note,
+            'cliente_id' => $client->name,
+            'usuario_id' => $user->name,
+            'estado' => $order->estado,
+            'descricao' => $order->descricao,
+            'forma_pagamento' => $order->forma_pagamento,
+            'valor' => $order->valor,
+            'desconto' => $order->desconto,
+            'sinal_compra' => $order->sinal_compra,
+            'data_registro' => $order->data_registro,
+            'data_prevista_finalizacao' => $order->data_prevista_finalizacao,
+            'nfenumero' => $order->nfenumero,
+            'senha' => $order->senha,
+            'valor_total' => $totalValue,
         ];
-        echo json_encode($resp);
+    
+        return response()->json($resp);
     }
+    
+    
+    
 
     public function cashFlowFilter(Request $request){
         $dateStart = $this->validDate($request->input('date_start'));
         $dateLast = $this->validDate($request->input('date_last'), true);
-        $orders = Order::
-        whereBetween('date_register', [$dateStart, $dateLast])
+        $orders = ordemServico::
+        whereBetween('data_registro', [$dateStart, $dateLast])
         ->get();
 
         return view('os/flow')
@@ -719,16 +828,39 @@ public function getProdutosSalvos($ordemServicoId)
         return redirect("/ordemServico/servicosordem/$id");
     }
 
+    public function alterarStatusServico($servicoId){
+        $servicoOs = ServicoOs::
+        where('id', $servicoId)
+        ->first();
 
+        $servicoOs->status = !$servicoOs->status;
+        $servicoOs->save();
+
+        session()->flash('mensagem_sucesso', 'Status de serviço alterado!');
+        return redirect("/ordemServico/servicosordem/$servicoId");
+    }
 
     public function setaDesconto(Request $request){
         $id = $request->id;
         $valor = $request->valor;
         $ordem = OrdemServico::find($id);
 
-        $ordem->desconto = $valor;
+        $ordem->valor = $ordem->desconto;
         $ordem->save();
         session()->flash('mensagem_sucesso', 'Desconto adicionado!');
+        return redirect()->back();
+    }
+
+    public function setaSinal(Request $request){
+        $id = $request->id;
+        $valor = $request->valor;
+        $ordem = OrdemServico::find($id);
+
+        $ordem->sinal_compra = $valor;
+
+
+        $ordem->save();
+        session()->flash('mensagem_sucesso', 'Sinal adicionado!');
         return redirect()->back();
     }
 

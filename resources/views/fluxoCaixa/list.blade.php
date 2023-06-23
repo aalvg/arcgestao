@@ -104,6 +104,28 @@
 										R$ {{number_format($f['venda']+$f['venda_caixa'], 2, ',', '.')}}
 									</a>
 								</div>
+
+
+
+
+								<div class="kt-widget__info">
+									<span class="kt-widget__label">Ordem de Serviço:</span>
+									<a class="kt-widget__data text-success">
+										{{number_format($f['valor_ordem_servico'], 2, ',', '.')}}
+									</a>
+								</div>
+
+
+								<div class="kt-widget__info">
+									<span class="kt-widget__label" style="color: red !important">Sinal de Compra OS:</span>
+									<a class="kt-widget__data text-success" style="color: red !important">
+										{{ number_format($f['sinal_os'], 2, ',', '.') }}
+									</a>
+								</div>
+								
+
+
+
 								<div class="kt-widget__info">
 									<span class="kt-widget__label">Contas a receber:</span>
 									<a class="kt-widget__data text-success">
@@ -123,7 +145,7 @@
 									</a>
 								</div>
 								<?php 
-								$resultado = $f['credito_venda']+$f['conta_receber']+$f['venda_caixa']+$f['venda']-$f['conta_pagar'];
+								$resultado = $f['credito_venda']+$f['conta_receber']+$f['venda_caixa']+$f['venda']+$f['valor_ordem_servico']+$f['sinal_os']-$f['conta_pagar'];
 								?>
 								<?php $cor = 'danger'; ?>
 								<div class="kt-widget__info">
@@ -156,7 +178,7 @@
 				</div>
 
 				<?php  
-				$totalVenda += $f['venda']+$f['venda_caixa'];
+				$totalVenda += $f['venda']+$f['venda_caixa']+$f['valor_ordem_servico']+$f['sinal_os'];
 				$totalContaReceber += $f['conta_receber'];
 				$totalContaPagar += $f['conta_pagar'];
 				$totalCredito += $f['credito_venda'];

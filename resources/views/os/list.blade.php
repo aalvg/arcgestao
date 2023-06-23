@@ -142,10 +142,18 @@
 
 							<div class="card-body">
 
+								
 								<div class="kt-widget__info">
 									<span class="kt-widget__label">Valor:</span>
-									<a target="_blank" class="kt-widget__data text-success">{{ number_format($o->valor, 2)}}</a>
+									<a target="_blank" class="kt-widget__data text-success" style="color: red !important">{{ $o->valor }}</a>
 								</div>
+
+								<div class="kt-widget__info">
+									<span class="kt-widget__label">Sinal de Compra:</span>
+									<a target="_blank" class="kt-widget__data text-success" style="color: rgb(45, 48, 243) !important">{{ $o->sinal_compra }}</a>
+								</div>
+
+
 								<div class="kt-widget__info">
 									<span class="kt-widget__label">Data:</span>
 									<a class="kt-widget__data text-success">{{ \Carbon\Carbon::parse($o->created_at)->format('d/m/Y H:i')}}</a>

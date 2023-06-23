@@ -634,7 +634,7 @@
 							</div>
 
 							<div class="col-sm-6 col-lg-6 col-md-6 col-xl-6 col-12">
-								<a id="salvar-venda" style="width: 100%;" href="#" onclick="salvarVenda('nfe')" class="btn btn-success disabled">Salvar Venda</a>
+								<a id="salvar-venda" style="width: 100%;" href="#" onclick="salvarVenda('nfe')" class="btn btn-success disabled">Salvar Venda</a> 
 							</div>
 						</div>
 					</div>

@@ -8,7 +8,7 @@ Route::group(['middleware' => ['web']], function () {
 
 	// ...
 
-	// Rota sem autenticação
+	// ESSAS SÃO AS ROTAS SEM AUTENTICAÇÃO NECESSIDADE DE LOGIN NO SISTEMA
 	Route::match(['get', 'post'], '/acessar-os', 'OrderController@acessarOs')->name('ordemServico.acessarOs');
 	Route::post('/visualizar', 'OrderController@visualizarServicos')->name('ordemServico.visualizarServicos');
 });
@@ -808,10 +808,11 @@ Route::middleware(['validaAcesso'])->group(function () {
 		Route::get('/deleteFuncionario/{id}', 'OrderController@deleteFuncionario');
 		Route::post('/saveFuncionario', 'OrderController@saveFuncionario');
 
-		
+		Route::get('/alterarStatusServico/{id}', 'OrderController@alterarStatusServico');
 		Route::get('/imprimir/{id}', 'OrderController@imprimir');
 
 		Route::post('/setaDesconto', 'OrderController@setaDesconto');
+		Route::post('/setaSinal', 'OrderController@setaSinal');
 /* TESTANDO ROTAS DE VENDAS EM ORDEM DE SERVIÇO*/
 	});
 

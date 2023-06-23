@@ -26,6 +26,12 @@ class OrdemServico extends Model
         return $this->belongsTo(Cliente::class, 'cliente_id');
     }
 
+
+    public function orcamento()
+{
+    return $this->belongsTo(Orcamento::class, 'orcamento_id');
+}
+
     public function usuario(){
         return $this->belongsTo(Usuario::class, 'usuario_id');
     }

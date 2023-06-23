@@ -16,7 +16,7 @@
 				@elseif($ordem->estado == 'rp')
 				<span class="label label-xl label-inline label-light-danger">REPROVADO</span>
 				@else
-				<span class="label label-xl label-inline label-light-info">FINALIZADO</span>
+				<span class="label label-xl label-inline label-light-info">FINALIZADO</span> 
 				@endif
 
 			</h4>

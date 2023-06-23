@@ -7,7 +7,9 @@ use App\Models\ContaPagar;
 use App\Models\ContaReceber;
 use App\Models\CreditoVenda;
 use App\Models\Venda;
-use App\Models\VendaCaixa;
+use App\Models\VendaCaixa; 
+use App\Models\OrdemServico;
+
 use Dompdf\Dompdf;
 
 class FluxoCaixaController extends Controller
@@ -121,6 +123,25 @@ class FluxoCaixaController extends Controller
 		return $venda;
 	}
 
+	private function getValorOrdemServico($data)
+	{
+		$valor = OrdemServico::where('estado', 'fz')
+			->whereDate('created_at', $data)
+			->sum('valor');
+	
+		return $valor;
+	}
+
+	private function getValorSinalOS($data)
+	{
+		$valor = OrdemServico::whereDate('created_at', $data)
+			->sum('sinal_compra');
+	
+		return $valor;
+	}
+	
+	
+
 	private function criarArrayDeDatas($inicio, $fim){
 		$diferenca = strtotime($fim) - strtotime($inicio);
 		$dias = floor($diferenca / (60 * 60 * 24));
@@ -138,6 +159,12 @@ class FluxoCaixaController extends Controller
 
 			$vendaCaixa = $this->getVendaCaixa($dataAtual);
 
+			$valorOrdemServico = $this->getValorOrdemServico($dataAtual);
+
+			$valorSinalOS = $this->getValorSinalOS($dataAtual);
+
+			
+
 			$tst = [
 				'data' => $this->parseViewData($dataAtual),
 				'conta_receber' => $contaReceber->valor ?? 0,
@@ -145,18 +172,23 @@ class FluxoCaixaController extends Controller
 				'credito_venda' => $credito->valor ?? 0,
 				'venda' => $venda->valor ?? 0,
 				'venda_caixa' => $vendaCaixa->valor ?? 0,
+				'valor_ordem_servico' => $valorOrdemServico,
+				'sinal_os' => $valorSinalOS
+
 			];
 
 			array_push($global, $tst);
 
 			$temp = [];
 
-			$dataAtual = date('Y-m-d', strtotime($dataAtual. '+1day'));
+			$dataAtual = date('Y-m-d', strtotime($dataAtual. '+1day')); 
 		}
 
 
 		return $global;
 	}
+
+
 
 	public function relatorioIndex(){
 

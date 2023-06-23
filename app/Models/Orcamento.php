@@ -18,6 +18,11 @@ class Orcamento extends Model
         return $this->belongsTo(Cliente::class, 'cliente_id');
     }
 
+    public function ordemServico()
+    {
+        return $this->hasOne(OrdemServico::class, 'orcamento_id');
+    }
+
     public function natureza(){
         return $this->belongsTo(NaturezaOperacao::class, 'natureza_id');
     }

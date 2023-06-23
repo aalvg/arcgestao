@@ -40,6 +40,9 @@ class Produto extends Model
 		return $this->belongsTo(TelaPedido::class, 'tela_id');
 	}
 
+
+
+
 	public function receita(){
 		return $this->hasOne('App\Models\Receita', 'produto_id', 'id');
 	}
@@ -47,19 +50,14 @@ class Produto extends Model
 	public function estoque(){
 		return $this->hasOne('App\Models\Estoque', 'produto_id', 'id');
 	}
-
-	public function estoqueAtual(){
-		$estoque = $this->estoque;
-		// if($this->gerenciar_estoque == 0) return '--';
-
-		if(!$estoque) return 0;
-		if($estoque){
-			if($this->unidade_venda == 'UN' || $this->unidade_venda == 'UNID'){
-				return number_format($estoque->quantidade);
-			}
-			return $estoque->quantidade;
-		}
+	public function atualizarEstoque($quantidade)
+	{
+		$estoque = $this->estoque->quantidade;
+		$estoque -= $quantidade;
+		$this->estoque->quantidade = $estoque;
+		$this->estoque->save();
 	}
+	
 
 	public function delivery(){
 		return $this->hasOne('App\Models\ProdutoDelivery', 'produto_id', 'id');

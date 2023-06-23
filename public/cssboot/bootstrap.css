@@ -8841,10 +8841,12 @@ a.text-secondary:hover, a.text-secondary:focus {
 
 .text-success {
   color: #28a745 !important;
+  font-weight: 600;
 }
 
 a.text-success:hover, a.text-success:focus {
   color: #1e7e34 !important;
+  font-weight: 600;
 }
 
 .text-info {
